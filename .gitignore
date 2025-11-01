@@ -1,0 +1,19 @@
+# Visual Studio user-specific files
+# Ignores the .vs folder which contains applicationhost.config
+/.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+# Ignores bin and obj folders
+[Bb]in/
+[Oo]bj/
+
+# NuGet packages folder
+# Ignores the packages folder
+[Pp]ackages/
+
+# Other
+*.nupkg

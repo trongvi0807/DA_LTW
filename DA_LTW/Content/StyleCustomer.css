@@ -1,0 +1,241 @@
+﻿/* 🌿 RESET & FONT */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* 🌿 HEADER */
+header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+    /* Logo */
+    header .logo img {
+        height: 60px;
+        transition: transform 0.3s ease;
+    }
+
+        header .logo img:hover {
+            transform: scale(1.05);
+        }
+
+/* Search bar */
+.search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    max-width: 450px;
+    margin: 0 30px;
+}
+
+    .search-bar input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px 0 0 20px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+        .search-bar input:focus {
+            border-color: #1eaf82;
+        }
+
+    .search-bar button {
+        background-color: #1eaf82;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 0 20px 20px 0;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .search-bar button:hover {
+            background-color: #148c68;
+        }
+
+/* 🌿 MAIN MENU */
+.main-menu ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.main-menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+}
+
+    .main-menu a:hover {
+        background-color: #1eaf82;
+        color: #fff;
+    }
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+    .dropdown .submenu {
+        position: absolute;
+        top: 110%;
+        left: 0;
+        background-color: #fff;
+        list-style: none;
+        padding: 10px 0;
+        border-radius: 6px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: none;
+        min-width: 180px;
+    }
+
+    .dropdown:hover > .submenu {
+        display: block;
+    }
+
+.submenu li a {
+    display: block;
+    padding: 8px 15px;
+    color: #333;
+    transition: background 0.3s;
+}
+
+    .submenu li a:hover {
+        background-color: #f1f1f1;
+    }
+
+.submenu .dropdown {
+    position: relative;
+}
+
+    .submenu .dropdown .submenu {
+        left: 100%;
+        top: 0;
+    }
+
+/* 🌿 LAYOUT */
+.container {
+    display: flex;
+    margin: 20px auto;
+    max-width: 1500px;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 260px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+
+    .sidebar h3 {
+        color: #1eaf82;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #1eaf82;
+        padding-bottom: 5px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+    }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+            .sidebar ul li a {
+                text-decoration: none;
+                color: #444;
+                transition: color 0.3s;
+            }
+
+                .sidebar ul li a:hover {
+                    color: #1eaf82;
+                }
+
+    /* Price filter */
+    .sidebar input[type="range"] {
+        width: 100%;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+/* Main content */
+main {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    min-height: 500px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Animation for content load */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+footer {
+    background-color: #1eaf82;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+    font-weight: 500;
+}
+
+@media (max-width: 992px) {
+    header {
+        flex-wrap: wrap;
+    }
+
+    .main-menu ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+}

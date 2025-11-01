@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <link rel="stylesheet" href="~/Content/StyleAdmin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="https://res.cloudinary.com/dxy81jyw2/image/upload/v1761979388/logo-nha-thuoc-1A47wD_agmkwi.webp" /></div>
+        <h2>Quản lý hệ thống nhà thuốc</h2>
+    </header>
+    <div class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                <li><a href="@Url.Action("Index","OrderManagement")"><i class="fa-solid fa-receipt"></i> Đơn hàng</a></li>
+                <li><a href="#"><i class="fa-solid fa-pen-nib"></i> Bài viết</a></li>
+                <li><a href="#"><i class="fa-solid fa-prescription-bottle-medical"></i> Đơn thuốc</a></li>
+                <li><a href="#"><i class="fa-solid fa-capsules"></i> Sản phẩm</a></li>
+                <li><a href="#"><i class="fa-solid fa-star-half-stroke"></i> Đánh giá</a></li>
+                <li><a href="#"><i class="fa-solid fa-users"></i> Người dùng</a></li>
+                <li><a href="#"><i class="fa-solid fa-ticket"></i> Phiếu giảm giá</a></li>
+            </ul>
+        </nav>
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+    <footer>
+        <p>2025-HỆ THỐNG QUẢN LÝ NHÀ THUỐC</p>
+    </footer>
+</body>
+</html>

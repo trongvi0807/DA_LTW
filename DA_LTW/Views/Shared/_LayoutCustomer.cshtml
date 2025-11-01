@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Nhà Thuốc Online</title>
+    <link rel="stylesheet" href="~/Content/StyleCustomer.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <!-- Bootstrap CSS -->
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://res.cloudinary.com/dxy81jyw2/image/upload/v1761979388/logo-nha-thuoc-1A47wD_agmkwi.webp" alt="Logo Nhà Thuốc" />
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm thuốc, sản phẩm..." />
+            <button type="submit"><i class="fa-solid fa-search"></i></button>
+        </div>
+        <nav class="main-menu">
+            <ul>
+                <li><a href="#"><i class="fa-solid fa-home"></i> Trang chủ</a></li>
+                <li class="dropdown">
+                    <a href="#"><i class="fa-solid fa-pills"></i> Thuốc <i class="fa-solid fa-chevron-down"></i></a>
+                    <ul class="submenu">
+                        <li><a href="#">Thuốc cảm cúm</a></li>
+                        <li><a href="#">Thuốc đau đầu</a></li>
+                        <li class="dropdown">
+                            <a href="#">Thuốc bổ <i class="fa-solid fa-chevron-right"></i></a>
+                            <ul class="submenu">
+                                <li><a href="#">Vitamin C</a></li>
+                                <li><a href="#">Canxi</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#"><i class="fa-solid fa-heartbeat"></i> Sức khỏe</a></li>
+                <li><a href="#"><i class="fa-solid fa-shopping-cart"></i> Giỏ hàng</a></li>
+                <li><a href="@Url.Action("Index","Account")"><i class="fa-solid fa-user"></i> Tài khoản</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Danh mục sản phẩm</h3>
+            <ul>
+                <li><a href="#"><i class="fa-solid fa-capsules"></i> Thuốc không kê đơn</a></li>
+                <li><a href="#"><i class="fa-solid fa-prescription-bottle-medical"></i> Thuốc kê đơn</a></li>
+                <li><a href="#"><i class="fa-solid fa-baby"></i> Sản phẩm cho trẻ em</a></li>
+                <li><a href="#"><i class="fa-solid fa-female"></i> Sản phẩm phụ nữ</a></li>
+                <li><a href="#"><i class="fa-solid fa-male"></i> Sản phẩm nam giới</a></li>
+                <li><a href="#"><i class="fa-solid fa-star-half-stroke"></i> Sản phẩm nổi bật</a></li>
+            </ul>
+            <h3>Lọc theo giá</h3>
+            <input type="range" min="0" max="1000000" />
+        </aside>
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+    <footer>
+        <p>2025 - HỆ THỐNG BÁN THUỐC ONLINE</p>
+    </footer>
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+</body>
+</html>
