@@ -130,6 +130,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\Admin\HomeAdminController.cs" />
+    <Compile Include="Controllers\Customer\CartController.cs" />
     <Compile Include="Controllers\Customer\HomeCustomerController.cs" />
     <Compile Include="Controllers\Customer\LoginController.cs" />
     <Compile Include="Controllers\Customer\RegisterController.cs" />
@@ -291,6 +292,8 @@
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Register\Index.cshtml" />
     <Content Include="Views\HomeCustomer\Profile.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Cart\_CartSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -115,7 +115,8 @@
                     </ul>
                 </li>
                 <li><a href="#"><i class="fa-solid fa-heartbeat"></i> Sức khỏe</a></li>
-                <li><a href="#"><i class="fa-solid fa-shopping-cart"></i> Giỏ hàng</a></li>
+                @Html.Action("CartSummary", "Cart", new { area = "Customer" })
+
                 @* Kiểm tra xem người dùng đã đăng nhập hay chưa bằng cách xem Session["User"] *@
                 @if (Session["User"] == null)
                 {
