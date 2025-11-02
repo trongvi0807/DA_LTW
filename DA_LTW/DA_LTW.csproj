@@ -200,6 +200,9 @@
     <Compile Include="Models\role.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>QL_THUOC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\tag.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
@@ -287,6 +290,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Register\Index.cshtml" />
+    <Content Include="Views\HomeCustomer\Profile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
