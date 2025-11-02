@@ -12,7 +12,6 @@ namespace DA_LTW.Controllers.Customer
 
         private db_cnpmEntities db = new db_cnpmEntities();
 
-        // Action này sẽ hiển thị trang chủ với danh sách sản phẩm
         public ActionResult Index()
         {
             // Lấy danh sách sản phẩm đang được bán, sắp xếp mới nhất lên đầu
@@ -23,6 +22,11 @@ namespace DA_LTW.Controllers.Customer
 
             // Truyền danh sách sản phẩm sang View
             return View(products);
+        }
+        public ActionResult Profile()
+        {
+            var result = db.users.FirstOrDefault();
+            return View(result);
         }
     }
 }

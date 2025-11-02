@@ -13,6 +13,10 @@
     <style>
              /* --- CSS cho Menu Tài Khoản --- */
 
+<<<<<<< HEAD
+        /* Style cho khu vực thông tin user đã đăng nhập */
+       
+=======
              /* Style cho khu vực thông tin user đã đăng nhập */
              .user-info {
                  display: flex;
@@ -81,6 +85,7 @@
                          background-color: #f5f5f5;
                          color: #20c997; /* Màu xanh ngọc chủ đạo */
                      }
+>>>>>>> main
     </style>
 </head>
 <body>
@@ -140,7 +145,7 @@
                             <i class="fa-solid fa-chevron-down"></i>
                         </a>
                         <ul class="submenu">
-                            <li><a href="@Url.Action("Profile", "Account")">Thông tin cá nhân</a></li>
+                            <li><a href="@Url.Action("Profile", "HomeCustomer")">Thông tin cá nhân</a></li>
                             <li><a href="@Url.Action("Logout", "Login")">Đăng xuất</a></li>
                         </ul>
                     </li>
@@ -171,6 +176,10 @@
     </footer>
     <script src="~/Scripts/jquery-3.6.0.min.js"></script>
     <script src="~/Scripts/bootstrap.js"></script>
+<<<<<<< HEAD
+   
+=======
     @RenderSection("scripts", required: false)
+>>>>>>> main
 </body>
 </html>
