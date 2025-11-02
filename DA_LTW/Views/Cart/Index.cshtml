@@ -1,0 +1,65 @@
+﻿@model List<DA_LTW.Models.cart_items>
+@{
+    ViewBag.Title = "Giỏ hàng của bạn";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // hoặc layout chính của bạn
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">🛒 Giỏ hàng của bạn</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            Giỏ hàng của bạn đang trống.
+            <br />
+            <a href="@Url.Action("Index", "Product")" class="btn btn-primary mt-3">Tiếp tục mua hàng</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:40%">Sản phẩm</th>
+                    <th style="width:15%">Đơn giá</th>
+                    <th style="width:15%">Số lượng</th>
+                    <th style="width:15%">Thành tiền</th>
+                    <th style="width:15%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.product_name</td>
+                        <td>@string.Format("{0:N0} ₫", item.sale_price)</td>
+                        <td>@item.quantity</td>
+                        <td>@string.Format("{0:N0} ₫", item.sale_price * item.quantity)</td>
+                        <td>
+                            @Html.ActionLink("Xóa", "Remove", "Cart", new { id = item.product_id },
+                                new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Xóa sản phẩm này?');" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                    <td colspan="2" class="fw-bold text-danger">
+                        @string.Format("{0:N0} ₫", Model.Sum(i => i.sale_price * i.quantity))
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-between mt-3">
+            <a href="@Url.Action("Index", "HomeCustomer")" class="btn btn-secondary">
+                ← Tiếp tục mua hàng
+            </a>
+
+            <a href="@Url.Action("Checkout", "Order")" class="btn btn-success">
+                Thanh toán →
+            </a>
+        </div>
+    }
+</div>
