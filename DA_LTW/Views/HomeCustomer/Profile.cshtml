@@ -166,38 +166,48 @@
         <input type="file" id="avatarUpload" name="avatarFile" accept="image/*" hidden />
     </div>
 
-    @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("handleProfile", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
 
-<div class="profile-form">
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="profile-form">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        <label>Họ và tên</label>
-        @Html.EditorFor(model => model.full_name, new { htmlAttributes = new { @class = "form-control" } })
-    </div>
+            <div class="form-group">
+                <label>Họ và tên</label>
+                @Html.EditorFor(model => model.full_name, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
 
-    <div class="form-group">
-        <label>Số điện thoại</label>
-        @Html.EditorFor(model => model.phone_number, new { htmlAttributes = new { @class = "form-control" } })
-    </div>
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                @Html.EditorFor(model => model.phone_number, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
 
-    <div class="form-group">
-        <label>Email</label>
-        @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
-    </div>
+            <div class="form-group">
+                <label>Email</label>
+                @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
 
-    <div class="form-group">
-        <label>Mật khẩu</label>
-        @Html.PasswordFor(model => model.password, new { @class = "form-control" })
-    </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                @Html.PasswordFor(model => model.password, new { @class = "form-control" })
+            </div>
 
+<<<<<<< HEAD
     <div class="form-actions">
         <button type="submit" class="btn-save">💾    Cập nhật</button>
         <button type="submit" class="btn-save">@Html.ActionLink("⬅ Quay lại", "Index", null, new { @class = "btn-back" })</button>
     </div>
 </div>
+=======
+            <div class="form-actions">
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">💾 Cập nhật</button>
+                    @Html.ActionLink("⬅ Quay lại", "Index", "HomeCustomer", new { @class = "btn-back" })
+                </div>
+            </div>
+        </div>
+>>>>>>> main
     }
 </div>
 
