@@ -1,0 +1,426 @@
+﻿@{
+    ViewBag.Title = "Thanh toán";
+    // Giả định các biến này đã được định nghĩa trong controller
+    var cart = ViewBag.Cart;
+    var items = ViewBag.Items as List<DA_LTW.Models.cart_items>;
+    // Đảm bảo cart và items không null để tránh lỗi Razor
+    if (cart == null) { cart = new { total_price = 0 }; }
+    if (items == null) { items = new List<DA_LTW.Models.cart_items>(); }
+}
+
+<style>
+    /* ------------------------------------------------------------------- */
+    /* 🚀 Tổng Thể & Bố Cục */
+    /* ------------------------------------------------------------------- */
+
+    .checkout-container {
+        display: flex;
+        gap: 30px;
+        margin: 40px auto;
+        max-width: 1200px;
+        padding: 0 20px;
+        font-family: 'Poppins', 'Segoe UI', sans-serif;
+        color: #333;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* ✨ Box Bên Trái / Phải (Container Chính) */
+    /* ------------------------------------------------------------------- */
+
+    .checkout-box {
+        flex: 1;
+        background: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eee;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+        .checkout-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ------------------------------------------------------------------- */
+        /* 🖋️ Tiêu Đề */
+        /* ------------------------------------------------------------------- */
+
+        .checkout-box h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+            border-left: 5px solid #0a5fec;
+            padding-left: 15px;
+            font-weight: 700;
+        }
+
+        .checkout-box h3 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 19px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+    /* ------------------------------------------------------------------- */
+    /* 📝 Form & Input */
+    /* ------------------------------------------------------------------- */
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        outline: none;
+        background-color: #f7f7f7;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #0a5fec;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(10, 95, 236, 0.15);
+        }
+
+    /* ------------------------------------------------------------------- */
+    /* 🟢 Nút Chính */
+    /* ------------------------------------------------------------------- */
+
+    .btn-primary {
+        background-color: #0a5fec;
+        color: #fff;
+        font-weight: 700;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(10, 95, 236, 0.3);
+    }
+
+        .btn-primary:hover {
+            background-color: #084aa6;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 6px 20px rgba(10, 95, 236, 0.4);
+        }
+
+    /* ------------------------------------------------------------------- */
+    /* 📦 RADIO GROUP (VẬN CHUYỂN) */
+    /* ------------------------------------------------------------------- */
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+        font-size: 15px;
+    }
+
+        .radio-option:hover {
+            background-color: #f5f8ff;
+            border-color: #0a5fec;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: #0a5fec;
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+            .radio-option input[type="radio"]:checked + span strong {
+                color: #084aa6;
+            }
+
+    .radio-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .radio-fee {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* ------------------------------------------------------------------- */
+    /* 🛒 DANH SÁCH SẢN PHẨM */
+    /* ------------------------------------------------------------------- */
+
+    .order-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s ease;
+        border-radius: 6px;
+    }
+
+        .order-item:hover {
+            background: #fcfcfc;
+        }
+
+        .order-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+    .item-details {
+        flex-grow: 1;
+    }
+
+        .item-details strong {
+            font-size: 17px;
+            color: #1a1a1a;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .item-details span {
+            font-size: 14px;
+            color: #777;
+        }
+
+    /* ------------------------------------------------------------------- */
+    /* 💰 TÓM TẮT ĐƠN HÀNG */
+    /* ------------------------------------------------------------------- */
+
+    .summary {
+        background: #eef4ff;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 30px;
+        line-height: 2;
+        font-size: 16px;
+        border: 1px solid #d0e0ff;
+    }
+
+        .summary p {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+            color: #555;
+        }
+
+            .summary p strong {
+                color: #333;
+                font-weight: 600;
+            }
+
+        .summary h3 {
+            display: flex;
+            justify-content: space-between;
+            font-size: 22px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed #d0e0ff;
+            color: #0a5fec;
+            font-weight: 700;
+        }
+
+            .summary h3 strong {
+                color: #e84949; /* Màu đỏ cho tổng cộng */
+            }
+
+    /* ------------------------------------------------------------------- */
+    /* 🏷️ Ô nhập mã giảm giá */
+    /* ------------------------------------------------------------------- */
+
+    /* Kiểu dáng cho ô giảm giá (đã sửa) */
+    #discountCodeInput {
+        border: 2px dashed #c0c0c0;
+        background: #fff;
+    }
+
+        #discountCodeInput:focus {
+            border-color: #0a5fec;
+        }
+
+    /* ------------------------------------------------------------------- */
+    /* 📱 RESPONSIVE */
+    /* ------------------------------------------------------------------- */
+
+    @@media (max-width: 900px) {
+        /* Chuyển sang 1 cột trên điện thoại/tablet */
+        .checkout-container {
+            flex-direction: column;
+        }
+
+        .checkout-box {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="checkout-container">
+    <div class="checkout-box">
+        <h2>Thông tin giao hàng</h2>
+
+        <form action="@Url.Action("PlaceOrder", "Checkout")" method="post" style="display:flex; flex-direction:column; gap:15px;">
+            <input type="text" name="fullName" placeholder="Họ và tên" required class="form-control" />
+            <input type="text" name="phone" placeholder="Số điện thoại" required class="form-control" />
+            <textarea name="address" placeholder="Địa chỉ giao hàng" required class="form-control"></textarea>
+
+            <h3>Phương thức vận chuyển</h3>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="shippingMethod" value="standard" checked />
+                    <span class="radio-info">Giao hàng tiêu chuẩn (3–5 ngày)</span>
+                    <span class="radio-fee">20.000đ</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="shippingMethod" value="express" />
+                    <span class="radio-info">Giao hàng nhanh (1–2 ngày)</span>
+                    <span class="radio-fee">40.000đ</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="shippingMethod" value="pickup" />
+                    <span class="radio-info">Nhận tại cửa hàng</span>
+                    <span class="radio-fee">Miễn phí</span>
+                </label>
+            </div>
+
+            <h3>Phương thức thanh toán</h3>
+            <select name="paymentMethod" class="form-control">
+                <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+                <option value="BANK_TRANSFER">Chuyển khoản ngân hàng</option>
+                <option value="VNPAY">Ví MoMo / VNPAY</option>
+            </select>
+
+            <h3 style="margin-top:10px; margin-bottom:10px;">Mã giảm giá</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="text"
+                       id="discountCodeInput"
+                       name="discountCode"
+                       placeholder="Nhập mã giảm giá"
+                       class="form-control"
+                       style="margin-top:0;" />
+
+                <button type="button"
+                        id="applyDiscountBtn"
+                        class="btn-primary"
+                        style="margin-top: 0; width: 120px; padding: 10px; font-size: 14px;">
+                    Áp dụng
+                </button>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top:15px;">Đặt hàng</button>
+        </form>
+    </div>
+
+    <div class="checkout-box">
+        <h2>Đơn hàng của bạn</h2>
+        <div>
+            @foreach (var item in items)
+            {
+                <div class="order-item">
+                    <img src="@item.image" alt="@item.product_name" />
+                    <div class="item-details">
+                        <strong>@item.product_name</strong>
+                        <span>@item.quantity x @String.Format("{0:N0} đ", item.sale_price)</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="summary">
+            <p>Tạm tính: <strong>@String.Format("{0:N0} đ", cart.total_price)</strong></p>
+            <p>Phí vận chuyển: <strong id="shippingFee">20.000 đ</strong></p>
+            <p>Giảm giá: <strong id="discountAmount">0 đ</strong></p>
+            <h3>Tổng cộng: <strong id="finalTotal">@String.Format("{0:N0} đ", cart.total_price + 20000)</strong></h3>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lấy các phần tử DOM
+    const shippingRadios = document.querySelectorAll('input[name="shippingMethod"]');
+    const discountInput = document.getElementById('discountCodeInput');
+    const applyBtn = document.getElementById('applyDiscountBtn');
+
+    const shippingFeeEl = document.getElementById('shippingFee');
+    const discountAmountEl = document.getElementById('discountAmount');
+    const finalTotalEl = document.getElementById('finalTotal');
+
+    // Lấy giá trị gốc từ server
+    const baseTotal = @cart.total_price;
+
+    // Biến toàn cục để giữ trạng thái
+    let currentShippingFee = 20000; // Mặc định là 'standard'
+    let currentDiscount = 0;
+
+    // Hàm định dạng tiền tệ
+    const formatCurrency = (number) => {
+        // Làm tròn số trước khi định dạng
+        return Math.round(number).toLocaleString('vi-VN') + ' đ';
+    };
+
+    // ✅ HÀM CẬP NHẬT TỔNG CỘNG (Quan trọng)
+    function updateFinalTotal() {
+        const finalTotal = baseTotal + currentShippingFee - currentDiscount;
+        finalTotalEl.textContent = formatCurrency(finalTotal);
+    }
+
+    // --- Lắng nghe sự kiện ---
+
+    // 1. Khi thay đổi phí vận chuyển
+    shippingRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'standard') currentShippingFee = 20000;
+            else if (radio.value === 'express') currentShippingFee = 40000;
+            else if (radio.value === 'pickup') currentShippingFee = 0;
+
+            // Cập nhật UI
+            shippingFeeEl.textContent = formatCurrency(currentShippingFee);
+
+            // Cập nhật tổng cuối cùng
+            updateFinalTotal();
+        });
+    });
+
+    // 2. Khi bấm nút "Áp dụng" mã giảm giá
+    applyBtn.addEventListener('click', () => {
+        const code = discountInput.value;
+
+        // Logic giả lập ở client để user thấy
+        // (Server sẽ tính lại)
+        if (code.toUpperCase() === 'SALE10') {
+            currentDiscount = baseTotal * 0.1; // 10%
+            discountAmountEl.textContent = formatCurrency(currentDiscount);
+            // Bạn có thể dùng alert hoặc một thông báo nhỏ đẹp hơn
+            // alert("Áp dụng mã giảm giá thành công!");
+        } else {
+            currentDiscount = 0;
+            discountAmountEl.textContent = formatCurrency(0);
+            // alert("Mã giảm giá không hợp lệ.");
+        }
+
+        // Cập nhật tổng cuối cùng
+        updateFinalTotal();
+    });
+
+    // Chạy một lần khi tải trang để đảm bảo tổng tiền ban đầu đúng
+    updateFinalTotal();
+
+</script>

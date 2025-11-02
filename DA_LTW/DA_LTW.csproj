@@ -178,6 +178,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\Admin\HomeAdminController.cs" />
     <Compile Include="Controllers\Customer\CartController.cs" />
+    <Compile Include="Controllers\Customer\CheckOutController.cs" />
     <Compile Include="Controllers\Customer\HomeCustomerController.cs" />
     <Compile Include="Controllers\Customer\LoginController.cs" />
     <Compile Include="Controllers\Customer\ProfileController.cs" />
@@ -247,6 +248,9 @@
     </Compile>
     <Compile Include="Models\RegisterViewModel.cs" />
     <Compile Include="Models\role.cs">
+      <DependentUpon>QL_THUOC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\tag.cs">
@@ -339,6 +343,8 @@
     <Content Include="Views\HomeCustomer\Profile.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Cart\_CartSummary.cshtml" />
+    <Content Include="Views\CheckOut\Index.cshtml" />
+    <Content Include="Views\CheckOut\Success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
