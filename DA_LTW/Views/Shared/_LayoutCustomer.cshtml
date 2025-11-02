@@ -9,7 +9,78 @@
     <!-- Bootstrap CSS -->
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
     <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+        /* --- CSS cho Menu Tài Khoản --- */
 
+        /* Style cho khu vực thông tin user đã đăng nhập */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Khoảng cách giữa avatar và tên */
+        }
+
+        /* Style cho avatar dạng ảnh */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%; /* Bo tròn avatar */
+            object-fit: cover; /* Đảm bảo ảnh không bị méo */
+            border: 1px solid #ddd;
+        }
+
+        /* Style cho avatar dạng icon (khi không có ảnh) */
+        .user-avatar-icon {
+            font-size: 28px;
+            color: #555;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        /* Ẩn/Hiện menu con (submenu) khi hover */
+        /* Đoạn CSS này có thể bạn đã có rồi cho menu "Thuốc", 
+   nhưng thêm vào để chắc chắn nó hoạt động cho cả menu tài khoản */
+
+        .main-menu li.dropdown {
+            position: relative; /* Cần thiết để định vị menu con */
+        }
+
+        .main-menu .submenu {
+            display: none; /* Mặc định ẩn menu con */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+            min-width: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
+        .main-menu li.dropdown:hover > .submenu {
+            display: block; /* Hiển thị menu con khi hover vào thẻ li cha */
+        }
+
+        .main-menu .submenu li {
+            width: 100%;
+        }
+
+            .main-menu .submenu li a {
+                display: block;
+                padding: 8px 20px;
+                color: #333;
+                white-space: nowrap; /* Ngăn text xuống dòng */
+            }
+
+                .main-menu .submenu li a:hover {
+                    background-color: #f5f5f5;
+                    color: #20c997; /* Màu xanh ngọc chủ đạo */
+                }
+    </style>
 </head>
 <body>
     <header>
@@ -39,7 +110,40 @@
                 </li>
                 <li><a href="#"><i class="fa-solid fa-heartbeat"></i> Sức khỏe</a></li>
                 <li><a href="#"><i class="fa-solid fa-shopping-cart"></i> Giỏ hàng</a></li>
-                <li><a href="@Url.Action("Index","Account")"><i class="fa-solid fa-user"></i> Tài khoản</a></li>
+                @* Kiểm tra xem người dùng đã đăng nhập hay chưa bằng cách xem Session["User"] *@
+                @if (Session["User"] == null)
+                {
+                    <li class="dropdown">
+                        <a href="#"><i class="fa-solid fa-user"></i> Tài khoản <i class="fa-solid fa-chevron-down"></i></a>
+                        <ul class="submenu">
+                            <li><a href="@Url.Action("Index", "Login")">Đăng nhập</a></li>
+                            <li><a href="@Url.Action("Index", "Register")">Đăng ký</a></li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    var user = Session["User"] as DA_LTW.Models.user;
+
+                    <li class="dropdown">
+                        <a href="#" class="user-info">
+                            @if (!string.IsNullOrEmpty(user.avatar))
+                            {
+                                <img src="@user.avatar" alt="Avatar" class="user-avatar" />
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-user-circle user-avatar-icon"></i>
+                            }
+                            <span class="user-name">@user.full_name</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="@Url.Action("Profile", "Account")">Thông tin cá nhân</a></li>
+                            <li><a href="@Url.Action("Logout", "Login")">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                }
             </ul>
         </nav>
     </header>
