@@ -21,6 +21,7 @@
         <EntityTypeShape EntityType="db_cnpmModel.product" Width="1.5" PointX="3" PointY="6.375" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.province" Width="1.5" PointX="8.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.role" Width="1.5" PointX="3.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.sysdiagram" Width="1.5" PointX="10.75" PointY="7.375" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.tag" Width="1.5" PointX="3" PointY="24.25" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.user_roles" Width="1.5" PointX="6" PointY="12.25" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.user" Width="1.5" PointX="0.75" PointY="13.625" IsExpanded="true" />
