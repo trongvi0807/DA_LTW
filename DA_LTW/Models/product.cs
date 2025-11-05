@@ -33,7 +33,8 @@ namespace DA_LTW.Models
         public string dosage { get; set; }
         public string contraindications { get; set; }
         public string packaging_details { get; set; }
-        public Nullable<bool> prescription_required { get; set; }
+        public bool prescription_required { get; set; }
+
         public decimal original_price { get; set; }
         public decimal sale_price { get; set; }
         public int stock_quantity { get; set; }
