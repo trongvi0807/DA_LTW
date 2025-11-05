@@ -1,0 +1,65 @@
+﻿@model DA_LTW.Models.post
+
+@{
+    ViewBag.Title = Model.title;
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <article class="blog-post">
+                <h1 class="fw-bold mb-3">@Model.title</h1>
+                <p class="text-muted mb-3">
+                    <i class="fa fa-calendar"></i> @Model.created_at |
+                    <i class="fa fa-eye"></i> @(Model.view_count ?? 0) lượt xem
+                </p>
+                <img src="@Model.thumbnail_url" alt="@Model.title" class="img-fluid rounded mb-4" />
+                <div class="blog-content">
+                    @Html.Raw(Model.content)
+                </div>
+            </article>
+
+            <hr class="my-5" />
+
+            @if (ViewBag.RelatedPosts != null && ((List<DA_LTW.Models.post>)ViewBag.RelatedPosts).Count > 0)
+            {
+                <h4 class="fw-bold mb-4 text-success">Bài viết liên quan</h4>
+                <div class="row g-3">
+                    @foreach (var rp in (List<DA_LTW.Models.post>)ViewBag.RelatedPosts)
+                    {
+                        <div class="col-md-6">
+                            <div class="card shadow-sm border-0 h-100 hover-card">
+                                <img src="@rp.thumbnail_url" class="card-img-top" alt="@rp.title" style="height: 160px; object-fit: cover;" />
+                                <div class="card-body">
+                                    <h6 class="card-title text-truncate">@rp.title</h6>
+                                    <a href="@Url.Action("Detail", "Blog", new { slug = rp.slug })" class="btn btn-outline-success btn-sm rounded-pill">Đọc thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .blog-post img {
+        border-radius: 12px;
+    }
+
+    .blog-content {
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+        }
+</style>
