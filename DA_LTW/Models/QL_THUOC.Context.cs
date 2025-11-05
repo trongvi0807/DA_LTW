@@ -41,6 +41,7 @@ namespace DA_LTW.Models
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<province> provinces { get; set; }
         public virtual DbSet<role> roles { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<tag> tags { get; set; }
         public virtual DbSet<user_roles> user_roles { get; set; }
         public virtual DbSet<user> users { get; set; }
