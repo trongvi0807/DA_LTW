@@ -12,7 +12,6 @@
 }
 
 <style>
-    /* --- BỐ CỤC CHÍNH --- */
     .product-detail-container {
         display: flex;
         flex-wrap: wrap;
@@ -29,12 +28,10 @@
     }
 
     .product-info {
-        /* Cho phép cột này tự động lấp đầy không gian còn lại */
         flex: 1;
-        min-width: 300px; /* Đảm bảo cột này không bị quá hẹp */
+        min-width: 300px;
     }
 
-    /* --- THƯ VIỆN ẢNH --- */
     .main-image-container {
         border-radius: 8px;
         overflow: hidden;
@@ -74,10 +71,8 @@
 
         .thumbnail-item:hover,
         .thumbnail-item.active {
-            border-color: #20c997; /* Màu xanh chủ đạo */
+            border-color: #20c997;
         }
-
-    /* --- THÔNG TIN SẢN PHẨM --- */
     .product-title {
         font-size: 26px;
         font-weight: 600;
@@ -118,8 +113,6 @@
         line-height: 1.6;
         margin-bottom: 24px;
     }
-
-    /* --- HÀNH ĐỘNG (SỐ LƯỢNG & NÚT) --- */
     .actions {
         display: flex;
         gap: 15px;
@@ -193,8 +186,6 @@
         font-size: 14px;
         color: #374151;
     }
-
-    /* --- CHI TIẾT DÀI & CÁC TAB --- */
     .product-long-details {
         background: #fff;
         padding: 20px;
@@ -252,25 +243,19 @@
         }
 </style>
 
-@* Phần HTML giữ nguyên, chỉ cần sửa CSS là đủ *@
 <div class="product-detail-container">
-    @* --- CỘT BÊN TRÁI: THƯ VIỆN ẢNH --- *@
     <div class="product-gallery">
         <div class="main-image-container">
             <img id="mainProductImage" src="https://nhathuocviet.com/wp-content/uploads/2025/04/terpin-dextromethorphan.png" alt="@Model.Product.name" />
         </div>
         <div class="thumbnail-list">
-            @* Thumbnail của ảnh đại diện *@
             <img src="@Model.Product.thumbnail_url" alt="Thumbnail 1" class="thumbnail-item active" onclick="changeImage(this)" />
-            @* Vòng lặp các ảnh phụ từ bảng product_images *@
             @foreach (var img in Model.Images)
             {
                 <img src="@img.image_url" alt="Thumbnail" class="thumbnail-item" onclick="changeImage(this)" />
             }
         </div>
     </div>
-
-    @* --- CỘT BÊN PHẢI: THÔNG TIN VÀ HÀNH ĐỘNG --- *@
     <div class="product-info">
         <h1 class="product-title">@Model.Product.name</h1>
         <p class="product-packaging">@Model.Product.packaging_details</p>
@@ -302,8 +287,6 @@
         </div>
     </div>
 </div>
-
-@* --- PHẦN MÔ TẢ DÀI BÊN DƯỚI --- *@
 <div class="product-long-details">
     <div class="tabs">
         <button class="tab-link active" onclick="openTab(event, 'Description')">Mô tả chi tiết</button>
@@ -348,14 +331,11 @@
 
 @section scripts {
     <script>
-        // JS cho thư viện ảnh
         function changeImage(thumbnailElement) {
             document.getElementById('mainProductImage').src = thumbnailElement.src;
             document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('active'));
             thumbnailElement.classList.add('active');
         }
-
-        // JS cho chọn số lượng
         function changeQuantity(amount) {
             const input = document.getElementById('quantityInput');
             let value = parseInt(input.value);
@@ -364,8 +344,6 @@
                 input.value = value + amount;
             }
         }
-
-        // JS cho các tab thông tin
         function openTab(evt, tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = "none");
             document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));

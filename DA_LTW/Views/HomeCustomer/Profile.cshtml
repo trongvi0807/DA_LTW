@@ -154,21 +154,24 @@
             text-decoration: underline;
         }
 
+
 </style>
-<div class="profile-container">
-    <h2 class="profile-title">Hồ sơ cá nhân</h2>
+@using (Html.BeginForm("handleProfile", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
 
-    <div class="avatar-section">
-        <div class="avatar-wrapper">
-            <img id="avatarPreview" src="@Model.avatar" alt="Avatar" class="avatar-img" />
-            <label for="avatarUpload" class="avatar-overlay">Thay đổi</label>
+    <div class="profile-container">
+        <h2 class="profile-title">Hồ sơ cá nhân</h2>
+
+        <!-- ĐÃ CHUYỂN: avatar-section nằm trong form để input file được submit -->
+        <div class="avatar-section">
+            <div class="avatar-wrapper">
+                <img id="avatarPreview" src="@Model.avatar" alt="Avatar" class="avatar-img" />
+                <label for="avatarUpload" class="avatar-overlay">Thay đổi</label>
+            </div>
+            <!-- IMPORTANT: name phải trùng với tham số controller: avatarFile -->
+            <input type="file" id="avatarUpload" name="avatarFile" accept="image/*" hidden />
         </div>
-        <input type="file" id="avatarUpload" name="avatarFile" accept="image/*" hidden />
-    </div>
-
-    @using (Html.BeginForm("handleProfile", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        @Html.AntiForgeryToken()
 
         <div class="profile-form">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -193,38 +196,35 @@
                 @Html.PasswordFor(model => model.password, new { @class = "form-control" })
             </div>
 
-<<<<<<< HEAD
-    <div class="form-actions">
-        <button type="submit" class="btn-save">💾    Cập nhật</button>
-        <button type="submit" class="btn-save">@Html.ActionLink("⬅ Quay lại", "Index", null, new { @class = "btn-back" })</button>
-    </div>
-</div>
-=======
             <div class="form-actions">
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">💾 Cập nhật</button>
-                    @Html.ActionLink("⬅ Quay lại", "Index", "HomeCustomer", new { @class = "btn-back" })
-                </div>
+                <button type="submit" class="btn-save">💾 Cập nhật</button>
+                <!-- ĐÃ SỬA: quay lại là link, không phải submit -->
+                <a href="@Url.Action("Index", "HomeCustomer")" class="btn-back">⬅ Quay lại</a>
             </div>
         </div>
->>>>>>> main
-    }
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-
-    <script>
-        // Hiển thị xem trước ảnh khi người dùng chọn ảnh mới
-        document.getElementById("avatarUpload").addEventListener("change", function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    document.getElementById("avatarPreview").src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
+    </div>
 }
+
+
+
+
+<script>
+    // đảm bảo DOM đã load
+    document.addEventListener('DOMContentLoaded', function () {
+        var avatarUpload = document.getElementById("avatarUpload");
+        var avatarPreview = document.getElementById("avatarPreview");
+
+        if (avatarUpload) {
+            avatarUpload.addEventListener("change", function (e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (ev) {
+                        avatarPreview.src = ev.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>

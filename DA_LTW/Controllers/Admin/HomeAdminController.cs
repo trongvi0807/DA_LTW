@@ -8,7 +8,6 @@ namespace DA_LTW.Controllers.Admin
 {
     public class HomeAdminController : Controller
     {
-        // GET: Home
         public ActionResult Index()
         {
             return View();
