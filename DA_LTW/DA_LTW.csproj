@@ -177,7 +177,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\Admin\HomeAdminController.cs" />
-    <Compile Include="Controllers\Admin\OrderManagementController.cs" />
     <Compile Include="Controllers\Admin\PostAdminController.cs" />
     <Compile Include="Controllers\Customer\BlogController.cs" />
     <Compile Include="Controllers\Customer\CartController.cs" />
@@ -185,7 +184,6 @@
     <Compile Include="Controllers\Customer\HomeCustomerController.cs" />
     <Compile Include="Controllers\Customer\LoginController.cs" />
     <Compile Include="Controllers\Admin\ProductController.cs" />
-    <Compile Include="Controllers\Customer\OrderController.cs" />
     <Compile Include="Controllers\Customer\ProfileController.cs" />
     <Compile Include="Controllers\Customer\RegisterController.cs" />
     <Compile Include="Filters\AdminAuthorizeAttribute.cs" />
