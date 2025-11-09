@@ -17,6 +17,8 @@ namespace DA_LTW
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "HomeCustomer", action = "Index", id = UrlParameter.Optional }
+                //defaults: new { controller = "HomeAdmin", action = "Index", id = UrlParameter.Optional }
+
             );
         }
     }

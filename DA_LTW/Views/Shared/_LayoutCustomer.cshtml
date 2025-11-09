@@ -141,7 +141,20 @@
                             <i class="fa-solid fa-chevron-down"></i>
                         </a>
                         <ul class="submenu">
+                            @if (Session["RoleCode"] != null && Session["RoleCode"].ToString() == "ADMIN")
+                            {
+                               
+                                <li>
+                                    <a href="@Url.Action("Index", "OrderManagement", new { area = "Admin" })" style="color: red; font-weight: bold;">
+                                        <i class="fa-solid fa-screwdriver-wrench"></i> Quản trị Hệ thống
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                            }
                             <li><a href="@Url.Action("Profile", "HomeCustomer")">Thông tin cá nhân</a></li>
+
+                            <li><a href="@Url.Action("OrderHistory", "Order")">Đơn hàng của tôi</a></li>
+
                             <li><a href="@Url.Action("Logout", "Login")">Đăng xuất</a></li>
                         </ul>
                     </li>

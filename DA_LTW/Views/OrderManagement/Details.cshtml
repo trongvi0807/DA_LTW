@@ -1,0 +1,177 @@
+﻿
+@model DA_LTW.Models.order
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    /* ===== Tổng thể ===== */
+    body {
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: #f5f6fa;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+
+    /* ===== Tiêu đề ===== */
+    h2 {
+        font-size: 26px;
+        margin-bottom: 20px;
+        color: #2d3436;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* ===== Thông tin đơn hàng ===== */
+    p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    strong {
+        color: #0984e3;
+    }
+
+    /* ===== Form cập nhật trạng thái ===== */
+    form {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    select.form-control {
+        padding: 8px 12px;
+        border: 1px solid #dcdde1;
+        border-radius: 6px;
+        background: #fff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        select.form-control:hover {
+            border-color: #74b9ff;
+            box-shadow: 0 0 5px rgba(116, 185, 255, 0.5);
+        }
+
+    button.btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    button.btn-success {
+        background-color: #00b894;
+        color: white;
+    }
+
+        button.btn-success:hover {
+            background-color: #019875;
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 184, 148, 0.3);
+        }
+
+    /* ===== Bảng chi tiết sản phẩm ===== */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #0984e3, #74b9ff);
+        color: white;
+        text-transform: uppercase;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: left;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: all 0.25s ease;
+    }
+
+        tbody tr:hover {
+            background: #f1f2f6;
+            transform: scale(1.01);
+        }
+
+    /* ===== Tổng cộng ===== */
+    h4 {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 20px;
+        color: #2d3436;
+    }
+
+        h4 span {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+    /* ===== Hiệu ứng nhẹ khi tải trang ===== */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    body, table, form {
+        animation: fadeInUp 0.6s ease-in-out;
+    }
+</style>
+<h2>Chi tiết đơn hàng @Model.id</h2>
+<p>Khách hàng : <strong>@Model.full_name</strong></p>
+<p>Địa chỉ : @Model.shipping_address</p>
+<form method="post" action="@Url.Action("UpdateStatus", "OrderManagement")">
+    <input type="hidden" name="id" value="@Model.id" />
+    <select name="status" class="form-control">
+        <option value="PENDING_CONFIRMATION" @(Model.status == "PENDING_CONFIRMATION" ? "selected" : "")>PENDING_CONFIRMATION</option>
+        <option value="PROCESSING" @(Model.status == "PROCESSING" ? "selected" : "")>PROCESSING</option>
+        <option value="SHIPPED" @(Model.status == "SHIPPED" ? "selected" : "")>SHIPPED</option>
+        <option value="DELIVERED" @(Model.status == "DELIVERED" ? "selected" : "")>DELIVERED</option>
+        <option value="CANCELLED" @(Model.status == "CANCELLED" ? "selected" : "")>CANCELLED</option>
+    </select>
+    <button type="submit" class="btn btn-success">Cập nhật</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.order_items)
+        {
+            <tr>
+                <td>@item.product.name</td>
+                <td>@item.quantity</td>
+                <td>@item.price</td>
+                <td>@item.quantity * @item.price</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h4>Tổng cộng: @string.Format("{0:N0} ₫", Model.total_money)</h4>
+
+

@@ -4,18 +4,17 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using DA_LTW.Models;
+using System.Data.Entity; // Cần thiết cho Include (nếu bạn muốn dùng)
 
 namespace DA_LTW.Controllers.Customer
 {
     public class LoginController : Controller
     {
-
         private db_cnpmEntities db = new db_cnpmEntities();
 
         [HttpGet]
         public ActionResult Index()
         {
-            // Nếu người dùng đã đăng nhập rồi thì chuyển về trang chủ
             if (Session["User"] != null)
             {
                 return RedirectToAction("Index", "HomeCustomer");
@@ -23,28 +22,63 @@ namespace DA_LTW.Controllers.Customer
             return View();
         }
 
-        // Xử lí khi người dùng nhấn vào nút đăng nhập
+        // ✅ THÊM THAM SỐ ReturnUrl VÀO ĐÂY
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password)
+        public ActionResult Login(string email, string password, string ReturnUrl)
         {
             if (ModelState.IsValid)
             {
-                // 1. Tìm người dùng trong CSDL theo email
+                // 1. Tìm người dùng
                 var user = db.users.FirstOrDefault(u => u.email.Equals(email));
+
                 if (user != null)
                 {
-                    if (user.password.Equals(password)) // Chỗ này phải so sánh mật khẩu đã mã hóa
+                    if (user.password.Equals(password)) // Vẫn khuyến nghị mã hóa mật khẩu
                     {
                         // Đăng nhập thành công!
-                        // Lưu thông tin người dùng vào Session
+
+                        // 2. ✅ TRUY VẤN VAI TRÒ (ROLE CODE)
+                        var userRoleCode = db.user_roles
+                                             .Where(ur => ur.user_id == user.id)
+                                             .Select(ur => ur.role.code)
+                                             .FirstOrDefault();
+
+                        if (string.IsNullOrEmpty(userRoleCode))
+                        {
+                            ModelState.AddModelError("", "Tài khoản không được gán vai trò.");
+                            return View("Index");
+                        }
+
+                        // 3. LƯU SESSION
                         Session["User"] = user;
                         Session["UserId"] = user.id;
                         Session["FullName"] = user.full_name;
+                        Session["RoleCode"] = userRoleCode; // Lưu Role Code
 
-                        // Chuyển hướng đến trang chủ của khách hàng
-                        return RedirectToAction("Index", "HomeCustomer");
-                    }
+
+                        // 4. ✅ PHÂN LUỒNG CHUYỂN HƯỚNG DỰA TRÊN VAI TRÒ
+                        if (userRoleCode == "ADMIN")
+                        {
+                            // Kiểm tra ReturnUrl (được gửi từ AdminAuthorizeAttribute)
+                            if (!string.IsNullOrEmpty(ReturnUrl))
+                            {
+                                // Chuyển về trang Admin bị chặn trước đó
+                                return Redirect(ReturnUrl);
+                            }
+                            else
+                            {
+                                // Mặc định: Chuyển đến trang Dashboard Admin
+                                return RedirectToAction("Index", "OrderManagement", new { area = "Admin" });
+                            }
+                        }
+                        else
+                        {
+                            // Khách hàng: Chuyển hướng đến trang chủ
+                            return RedirectToAction("Index", "HomeCustomer");
+                        }
+
+                    } // End if (user.password.Equals(password))
                     else
                     {
                         // Sai mật khẩu
@@ -56,10 +90,17 @@ namespace DA_LTW.Controllers.Customer
                     // Không tìm thấy email
                     ModelState.AddModelError("", "Email hoặc mật khẩu không chính xác.");
                 }
-
             }
-            // Nếu lỗi thì quay lại trang đăng nhập sử lí lỗi. 
+
+            // Nếu lỗi (invalid, sai mật khẩu, hoặc không tìm thấy user)
             return View("Index");
         }
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return RedirectToAction("Index", "Login");
+        }
+
     }
 }

@@ -1,0 +1,145 @@
+﻿@model DA_LTW.Models.order
+@{
+    ViewBag.Title = "Theo dõi đơn hàng";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+
+    // Định nghĩa các trạng thái chính và thứ tự
+    var statusSteps = new List<string> {
+        "PENDING_CONFIRMATION", // Chờ xác nhận
+        "PROCESSING",           // Đang xử lý (Đóng gói)
+        "SHIPPING",             // Đang giao
+        "DELIVERED"             // Đã giao
+    };
+
+    // Tìm index của trạng thái hiện tại
+    int currentStep = statusSteps.IndexOf(Model.status ?? "") + 1;
+    if (Model.status == "CANCELLED") { currentStep = -1; } // Xử lý trường hợp hủy
+}
+
+<style>
+    /* CSS cho thanh tiến trình (Order Timeline) */
+    .timeline {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        position: relative;
+        padding: 0 50px; /* Thêm padding để biểu tượng không bị sát lề */
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 25px;
+        left: 50px;
+        right: 50px;
+        height: 4px;
+        background: #ddd;
+        z-index: 1;
+    }
+
+    .timeline-step {
+        text-align: center;
+        width: 25%;
+        position: relative;
+        z-index: 2;
+    }
+
+    .timeline-icon {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        border-radius: 50%;
+        background: #ddd;
+        color: white;
+        margin: 0 auto 10px;
+        font-weight: bold;
+        transition: all 0.3s;
+        border: 4px solid white;
+    }
+
+    .timeline-step.active .timeline-icon {
+        background: #007bff; /* Màu xanh khi đang ở bước đó */
+        box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.3);
+    }
+
+    .timeline-step.completed .timeline-icon {
+        background: #28a745; /* Màu xanh lá khi hoàn thành */
+    }
+
+    .timeline-step.completed ~ .timeline-step .timeline-icon {
+        /* Đảm bảo các bước sau bước hoàn thành không có màu */
+        background: #ddd;
+    }
+
+    /* Thiết lập đường line màu xanh cho các bước đã hoàn thành */
+    .timeline::after {
+        content: '';
+        position: absolute;
+        top: 25px;
+        left: 50px;
+        width: @(currentStep > 0 ? (currentStep - 1) * 33.33 : 0)%; /* Tỉ lệ % line màu xanh */
+        height: 4px;
+        background: #28a745;
+        z-index: 1;
+        transition: width 0.5s ease-in-out;
+    }
+
+    .status-cancelled {
+        color: #dc3545;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container">
+    <h2>Theo dõi đơn hàng #@Model.id</h2>
+    <p>Trạng thái hiện tại: <strong>@Model.status</strong></p>
+
+    @if (currentStep > 0)
+    {
+        <div class="timeline">
+            @for (int i = 0; i < statusSteps.Count; i++)
+            {
+                string stepStatus = statusSteps[i];
+                int stepIndex = i + 1;
+                string cssClass = "";
+
+                if (stepIndex == currentStep)
+                {
+                    cssClass = "active";
+                }
+                else if (stepIndex < currentStep)
+                {
+                    cssClass = "completed";
+                }
+
+                <div class="timeline-step @cssClass">
+                    <div class="timeline-icon">@stepIndex</div>
+                    <div class="timeline-label">
+                        <strong>@stepStatus.Replace("_", " ")</strong>
+                    </div>
+                </div>
+            }
+        </div>
+
+        // Hiển thị Mã vận đơn nếu có
+        if (@Model.status == "SHIPPING" && !string.IsNullOrEmpty(@Model.tracking_number))
+        {
+            <div style="text-align:center; margin-top:30px;">
+                <p>Mã vận đơn: <strong>@Model.tracking_number</strong></p>
+                <p>Khách hàng có thể sử dụng mã này để theo dõi trên website của đơn vị vận chuyển.</p>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="status-cancelled">
+            Đơn hàng đã bị HỦY (@Model.status).
+        </div>
+    }
+
+    <hr style="margin-top: 50px;" />
+
+    @* Có thể thêm chi tiết đơn hàng (sản phẩm, địa chỉ, tổng tiền) tại đây *@
+</div>
