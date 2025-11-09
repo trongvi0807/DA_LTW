@@ -158,18 +158,6 @@
           <Property Name="created_by" Type="nvarchar" MaxLength="100" />
           <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
         </EntityType>
-        <EntityType Name="post_tags">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="post_id" Type="int" Nullable="false" />
-          <Property Name="tag_id" Type="int" Nullable="false" />
-          <Property Name="created_at" Type="datetime2" Precision="7" />
-          <Property Name="updated_at" Type="datetime2" Precision="7" />
-          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
-          <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
-        </EntityType>
         <EntityType Name="posts">
           <Key>
             <PropertyRef Name="id" />
@@ -263,18 +251,6 @@
           <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="version" Type="int" />
           <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
-        <EntityType Name="tags">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="slug" Type="nvarchar" MaxLength="120" Nullable="false" />
-          <Property Name="created_at" Type="datetime2" Precision="7" />
-          <Property Name="updated_at" Type="datetime2" Precision="7" />
-          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
-          <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="user_roles">
           <Key>
@@ -436,30 +412,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_post_tags_posts">
-          <End Role="posts" Type="Self.posts" Multiplicity="1" />
-          <End Role="post_tags" Type="Self.post_tags" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="posts">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="post_tags">
-              <PropertyRef Name="post_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_post_tags_tags">
-          <End Role="tags" Type="Self.tags" Multiplicity="1" />
-          <End Role="post_tags" Type="Self.post_tags" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="tags">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="post_tags">
-              <PropertyRef Name="tag_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_posts_post_categories">
           <End Role="post_categories" Type="Self.post_categories" Multiplicity="0..1" />
           <End Role="posts" Type="Self.posts" Multiplicity="*" />
@@ -567,14 +519,12 @@
           <EntitySet Name="order_items" EntityType="Self.order_items" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="orders" EntityType="Self.orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="post_categories" EntityType="Self.post_categories" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="post_tags" EntityType="Self.post_tags" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="posts" EntityType="Self.posts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="product_images" EntityType="Self.product_images" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="products" EntityType="Self.products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="provinces" EntityType="Self.provinces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="roles" EntityType="Self.roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="tags" EntityType="Self.tags" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wards" EntityType="Self.wards" Schema="dbo" store:Type="Tables" />
@@ -617,14 +567,6 @@
           <AssociationSet Name="fk_post_categories_parent" Association="Self.fk_post_categories_parent">
             <End Role="post_categories" EntitySet="post_categories" />
             <End Role="post_categories1" EntitySet="post_categories" />
-          </AssociationSet>
-          <AssociationSet Name="fk_post_tags_posts" Association="Self.fk_post_tags_posts">
-            <End Role="posts" EntitySet="posts" />
-            <End Role="post_tags" EntitySet="post_tags" />
-          </AssociationSet>
-          <AssociationSet Name="fk_post_tags_tags" Association="Self.fk_post_tags_tags">
-            <End Role="tags" EntitySet="tags" />
-            <End Role="post_tags" EntitySet="post_tags" />
           </AssociationSet>
           <AssociationSet Name="fk_posts_post_categories" Association="Self.fk_posts_post_categories">
             <End Role="post_categories" EntitySet="post_categories" />
@@ -836,20 +778,6 @@
           <NavigationProperty Name="post_categories2" Relationship="Self.fk_post_categories_parent" FromRole="post_categories1" ToRole="post_categories" />
           <NavigationProperty Name="posts" Relationship="Self.fk_posts_post_categories" FromRole="post_categories" ToRole="posts" />
         </EntityType>
-        <EntityType Name="post_tags">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="post_id" Type="Int32" Nullable="false" />
-          <Property Name="tag_id" Type="Int32" Nullable="false" />
-          <Property Name="created_at" Type="DateTime" Precision="7" />
-          <Property Name="updated_at" Type="DateTime" Precision="7" />
-          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="post" Relationship="Self.fk_post_tags_posts" FromRole="post_tags" ToRole="posts" />
-          <NavigationProperty Name="tag" Relationship="Self.fk_post_tags_tags" FromRole="post_tags" ToRole="tags" />
-        </EntityType>
         <EntityType Name="post">
           <Key>
             <PropertyRef Name="id" />
@@ -870,7 +798,6 @@
           <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="post_categories" Relationship="Self.fk_posts_post_categories" FromRole="posts" ToRole="post_categories" />
-          <NavigationProperty Name="post_tags" Relationship="Self.fk_post_tags_posts" FromRole="posts" ToRole="post_tags" />
           <NavigationProperty Name="user" Relationship="Self.fk_posts_users" FromRole="posts" ToRole="users" />
         </EntityType>
         <EntityType Name="product_images">
@@ -954,19 +881,6 @@
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="tag">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="slug" Type="String" MaxLength="120" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="created_at" Type="DateTime" Precision="7" />
-          <Property Name="updated_at" Type="DateTime" Precision="7" />
-          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="post_tags" Relationship="Self.fk_post_tags_tags" FromRole="tags" ToRole="post_tags" />
         </EntityType>
         <EntityType Name="user_roles">
           <Key>
@@ -1183,30 +1097,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_post_tags_posts">
-          <End Role="posts" Type="Self.post" Multiplicity="1" />
-          <End Role="post_tags" Type="Self.post_tags" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="posts">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="post_tags">
-              <PropertyRef Name="post_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_post_tags_tags">
-          <End Role="tags" Type="Self.tag" Multiplicity="1" />
-          <End Role="post_tags" Type="Self.post_tags" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="tags">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="post_tags">
-              <PropertyRef Name="tag_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_posts_users">
           <End Role="users" Type="Self.user" Multiplicity="1" />
           <End Role="posts" Type="Self.post" Multiplicity="*" />
@@ -1266,14 +1156,12 @@
           <EntitySet Name="order_items" EntityType="Self.order_items" />
           <EntitySet Name="orders" EntityType="Self.order" />
           <EntitySet Name="post_categories" EntityType="Self.post_categories" />
-          <EntitySet Name="post_tags" EntityType="Self.post_tags" />
           <EntitySet Name="posts" EntityType="Self.post" />
           <EntitySet Name="product_images" EntityType="Self.product_images" />
           <EntitySet Name="products" EntityType="Self.product" />
           <EntitySet Name="provinces" EntityType="Self.province" />
           <EntitySet Name="roles" EntityType="Self.role" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
-          <EntitySet Name="tags" EntityType="Self.tag" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" />
           <EntitySet Name="users" EntityType="Self.user" />
           <EntitySet Name="wards" EntityType="Self.ward" />
@@ -1332,14 +1220,6 @@
           <AssociationSet Name="fk_posts_post_categories" Association="Self.fk_posts_post_categories">
             <End Role="post_categories" EntitySet="post_categories" />
             <End Role="posts" EntitySet="posts" />
-          </AssociationSet>
-          <AssociationSet Name="fk_post_tags_posts" Association="Self.fk_post_tags_posts">
-            <End Role="posts" EntitySet="posts" />
-            <End Role="post_tags" EntitySet="post_tags" />
-          </AssociationSet>
-          <AssociationSet Name="fk_post_tags_tags" Association="Self.fk_post_tags_tags">
-            <End Role="tags" EntitySet="tags" />
-            <End Role="post_tags" EntitySet="post_tags" />
           </AssociationSet>
           <AssociationSet Name="fk_posts_users" Association="Self.fk_posts_users">
             <End Role="users" EntitySet="users" />
@@ -1527,19 +1407,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="post_tags">
-            <EntityTypeMapping TypeName="db_cnpmModel.post_tags">
-              <MappingFragment StoreEntitySet="post_tags">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="post_id" ColumnName="post_id" />
-                <ScalarProperty Name="tag_id" ColumnName="tag_id" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
-                <ScalarProperty Name="created_by" ColumnName="created_by" />
-                <ScalarProperty Name="updated_by" ColumnName="updated_by" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="posts">
             <EntityTypeMapping TypeName="db_cnpmModel.post">
               <MappingFragment StoreEntitySet="posts">
@@ -1637,19 +1504,6 @@
                 <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
                 <ScalarProperty Name="version" ColumnName="version" />
                 <ScalarProperty Name="definition" ColumnName="definition" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="tags">
-            <EntityTypeMapping TypeName="db_cnpmModel.tag">
-              <MappingFragment StoreEntitySet="tags">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="slug" ColumnName="slug" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
-                <ScalarProperty Name="created_by" ColumnName="created_by" />
-                <ScalarProperty Name="updated_by" ColumnName="updated_by" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

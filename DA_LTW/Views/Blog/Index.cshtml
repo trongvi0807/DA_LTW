@@ -1,0 +1,49 @@
+﻿@model IEnumerable<DA_LTW.Models.post>
+
+@{
+    ViewBag.Title = "Bài viết sức khỏe";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml"; // thay bằng layout của bạn
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-success">🌿 Góc Sức Khỏe & Tin Tức</h2>
+        <p class="text-muted">Cập nhật kiến thức y dược, chăm sóc sức khỏe và dinh dưỡng hằng ngày</p>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var post in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card shadow-sm border-0 h-100 hover-card">
+                    <div class="ratio ratio-4x3">
+                        <img src="@post.thumbnail_url" class="card-img-top" alt="@post.title" style="object-fit: cover;" />
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">@post.title</h5>
+                        <p class="card-text text-muted small">
+                            @(post.excerpt?.Length > 80 ? post.excerpt.Substring(0, 80) + "..." : post.excerpt)
+                        </p>
+                        <div class="mt-auto">
+                            <a href="@Url.Action("Detail", "Blog", new { slug = post.slug })"
+                               class="btn btn-success w-100 rounded-pill">
+                                Đọc thêm
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+</style>

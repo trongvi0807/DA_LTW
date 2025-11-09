@@ -35,14 +35,12 @@ namespace DA_LTW.Models
         public virtual DbSet<order_items> order_items { get; set; }
         public virtual DbSet<order> orders { get; set; }
         public virtual DbSet<post_categories> post_categories { get; set; }
-        public virtual DbSet<post_tags> post_tags { get; set; }
         public virtual DbSet<post> posts { get; set; }
         public virtual DbSet<product_images> product_images { get; set; }
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<province> provinces { get; set; }
         public virtual DbSet<role> roles { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
-        public virtual DbSet<tag> tags { get; set; }
         public virtual DbSet<user_roles> user_roles { get; set; }
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<ward> wards { get; set; }

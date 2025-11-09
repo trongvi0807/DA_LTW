@@ -14,12 +14,6 @@ namespace DA_LTW.Models
     
     public partial class post
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public post()
-        {
-            this.post_tags = new HashSet<post_tags>();
-        }
-    
         public int id { get; set; }
         public string title { get; set; }
         public string slug { get; set; }
@@ -37,8 +31,6 @@ namespace DA_LTW.Models
         public string updated_by { get; set; }
     
         public virtual post_categories post_categories { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<post_tags> post_tags { get; set; }
         public virtual user user { get; set; }
     }
 }

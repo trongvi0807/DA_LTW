@@ -67,7 +67,7 @@ namespace DA_LTW.Controllers.Customer
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(avatarFile.FileName, avatarFile.InputStream),
-                    Folder = "user_avatars" // (Tùy chọn) Lưu vào thư mục cụ thể trên Cloudinary
+                    Folder = "products" // (Tùy chọn) Lưu vào thư mục cụ thể trên Cloudinary
                 };
 
                 var uploadResult = cloudinary.Upload(uploadParams);
@@ -101,7 +101,6 @@ namespace DA_LTW.Controllers.Customer
             db.Entry(userInDb).State = EntityState.Modified;
             db.SaveChanges();
 
-            // --- THÊM DÒNG NÀY VÀO ---
             // Cập nhật lại đối tượng user trong Session với thông tin mới nhất
             Session["User"] = userInDb;
 

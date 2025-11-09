@@ -177,13 +177,18 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\Admin\HomeAdminController.cs" />
+    <Compile Include="Controllers\Admin\OrderManagementController.cs" />
+    <Compile Include="Controllers\Admin\PostAdminController.cs" />
+    <Compile Include="Controllers\Customer\BlogController.cs" />
     <Compile Include="Controllers\Customer\CartController.cs" />
     <Compile Include="Controllers\Customer\CheckOutController.cs" />
     <Compile Include="Controllers\Customer\HomeCustomerController.cs" />
     <Compile Include="Controllers\Customer\LoginController.cs" />
-    <Compile Include="Controllers\Customer\ProductController.cs" />
+    <Compile Include="Controllers\Admin\ProductController.cs" />
+    <Compile Include="Controllers\Customer\OrderController.cs" />
     <Compile Include="Controllers\Customer\ProfileController.cs" />
     <Compile Include="Controllers\Customer\RegisterController.cs" />
+    <Compile Include="Filters\AdminAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -220,9 +225,6 @@
     <Compile Include="Models\post_categories.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\post_tags.cs">
-      <DependentUpon>QL_THUOC.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\product.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
@@ -254,9 +256,6 @@
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\tag.cs">
-      <DependentUpon>QL_THUOC.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\user.cs">
       <DependentUpon>QL_THUOC.tt</DependentUpon>
     </Compile>
@@ -268,6 +267,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\IngredientViewModel.cs" />
+    <Compile Include="ViewModels\PostViewModel.cs" />
     <Compile Include="ViewModels\ProductDetailViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +347,19 @@
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Cart\_CartSummary.cshtml" />
     <Content Include="Views\Product\Detail.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
+    <Content Include="Views\Product\Create.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Blog\Detail.cshtml" />
+    <Content Include="Views\PostAdmin\Index.cshtml" />
+    <Content Include="Views\PostAdmin\Create.cshtml" />
+    <Content Include="Views\PostAdmin\Edit.cshtml" />
+    <Content Include="Views\CheckOut\Index.cshtml" />
+    <Content Include="Views\CheckOut\Success.cshtml" />
+    <Content Include="Views\OrderManagement\Index.cshtml" />
+    <Content Include="Views\OrderManagement\Details.cshtml" />
+    <Content Include="Views\Order\Tracking.cshtml" />
+    <Content Include="Views\Order\OrderHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

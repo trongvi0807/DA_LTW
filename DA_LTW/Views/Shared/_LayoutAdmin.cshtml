@@ -17,13 +17,14 @@
             <ul>
                 <li><a href="#" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
                 <li><a href="@Url.Action("Index","OrderManagement")"><i class="fa-solid fa-receipt"></i> Đơn hàng</a></li>
-                <li><a href="#"><i class="fa-solid fa-pen-nib"></i> Bài viết</a></li>
+                <li><a href="@Url.Action("Index", "PostAdmin")"><i class="fa-solid fa-pen-nib"></i> Bài viết</a></li>
                 <li><a href="#"><i class="fa-solid fa-prescription-bottle-medical"></i> Đơn thuốc</a></li>
-                <li><a href="#"><i class="fa-solid fa-capsules"></i> Sản phẩm</a></li>
+                <li><a href="@Url.Action("Index", "Product")"><i class="fa-solid fa-capsules"></i> Sản phẩm</a></li>
                 <li><a href="#"><i class="fa-solid fa-star-half-stroke"></i> Đánh giá</a></li>
                 <li><a href="#"><i class="fa-solid fa-users"></i> Người dùng</a></li>
                 <li><a href="#"><i class="fa-solid fa-ticket"></i> Phiếu giảm giá</a></li>
             </ul>
+            <ul> <li><a href="@Url.Action("Logout", "HomeAdmin")">Đăng xuất</a></li></ul>
         </nav>
         <main>
             @RenderBody()

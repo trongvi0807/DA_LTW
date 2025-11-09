@@ -1,0 +1,357 @@
+﻿@model DA_LTW.Models.product
+@{
+    ViewBag.Title = "Thêm / Sửa sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+/* ----- Form styles (nhúng trực tiếp hoặc cho vào StyleAdmin.css) ----- */
+.product-form {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  max-width: 980px;
+  margin: 18px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  color: #102a43;
+}
+
+.product-form h2 { margin: 0 0 12px 0; color: #0f766e; }
+
+.row { display:flex; gap:16px; flex-wrap:wrap; }
+.col-2 { flex: 1 1 48%; min-width: 240px; }
+.col-full { flex-basis: 100%; }
+
+.form-group { margin-bottom: 12px; display:flex; flex-direction:column; }
+.form-group label { font-weight:600; margin-bottom:6px; font-size:14px; color:#123; }
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"],
+.form-group textarea,
+.form-group select {
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #e6eef3;
+  font-size:14px;
+  background:#fbfdff;
+}
+.form-group textarea { min-height:120px; resize:vertical; }
+
+.checkbox-inline { display:flex; align-items:center; gap:8px; }
+
+.small-note { font-size:13px; color:#66748a; margin-top:6px; }
+
+.preview-thumb { width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #eef2f6; box-shadow:0 6px 14px rgba(16,24,40,0.04); }
+.images-grid { display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+.image-card { width:120px; text-align:center; font-size:13px; }
+.image-card img { width:120px; height:80px; object-fit:cover; border-radius:6px; display:block; margin-bottom:6px; }
+
+.btn-group { display:flex; gap:8px; margin-top:10px; }
+.btn { padding:8px 14px; border-radius:10px; font-weight:700; border:none; cursor:pointer; text-decoration:none; color:#fff; background:linear-gradient(90deg,#20c997,#17a2b8); }
+.btn.secondary { background:linear-gradient(90deg,#64748b,#475569); }
+.btn.ghost { background:transparent; color:#0f172a; border:1px solid #e6eef3; box-shadow:none; }
+
+/* ingredient table */
+.ingredients { border:1px dashed #e6eef3; padding:10px; border-radius:8px; }
+.ingredient-row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+.ingredient-row input { flex:1; padding:8px; border-radius:6px; border:1px solid #e6eef3; }
+
+/* responsive */
+@@media (max-width:860px) {
+  .col-2 { flex-basis:100%; }
+}
+
+    /* ----- Form group chuẩn chỉnh ----- */
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #334155; /* màu chữ tối nhẹ */
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+    /* ----- Input box ----- */
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background-color: #fff;
+        font-size: 14px;
+        color: #1e293b;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+    /* ----- Checkbox + ghi chú ----- */
+    .form-group div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #10b981; /* màu xanh lá chủ đạo */
+        cursor: pointer;
+    }
+
+    .small-note {
+        font-size: 13px;
+        color: #6b7280;
+        font-style: italic;
+    }
+
+    /* ----- Wrapper div chứa cả 2 phần ----- */
+    .product-extra-info {
+        flex: 1;
+        min-width: 260px;
+        background: #f9fafb;
+        padding: 14px 16px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+        .product-extra-info label:first-child {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+</style>
+
+<div class="product-form">
+    <h2>@(Model != null && Model.id > 0 ? "Sửa sản phẩm" : "Thêm sản phẩm")</h2>
+
+    @using (Html.BeginForm(Model != null && Model.id > 0 ? "Edit" : "Create", "Product",
+        FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.id)
+
+        <div class="row">
+            <div class="col-2">
+                <div class="form-group">
+                    <label>Tên sản phẩm</label>
+                    @Html.TextBoxFor(m => m.name, new { @class = "form-control", placeholder = "Ví dụ: Thuốc giảm đau X" })
+                </div>
+
+                <div class="form-group">
+                    <label>SKU</label>
+                    @Html.TextBoxFor(m => m.sku, new { @class = "form-control", placeholder = "Mã SKU (duy nhất)" })
+                </div>
+
+                <div class="form-group">
+                    <label>Slug (URL thân thiện)</label>
+                    @Html.TextBoxFor(m => m.slug, new { @class = "form-control", placeholder = "thuoc-giam-dau-x" })
+                    <div class="small-note">Nếu để trống, hệ thống có thể tự sinh từ tên.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Danh mục</label>
+                    @Html.DropDownList("category_id", (SelectList)ViewBag.Categories, "-- Chọn danh mục --", new { @class = "form-control" })
+                </div>
+
+                <div class="form-group">
+                    <label>Thương hiệu</label>
+                    @Html.DropDownList("brand_id", (SelectList)ViewBag.Brands, "-- Chọn thương hiệu --", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="col-2">
+                <div class="form-group">
+                    <label>Ảnh đại diện (thumbnail)</label>
+                    <input type="file" id="thumbnailFile" name="UploadThumb" accept="image/*" />
+                    <div class="small-note">Kích thước đề xuất: 800x800, định dạng JPG/PNG.</div>
+                    <div style="margin-top:10px;">
+                        <img id="thumbPreview" src="@(String.IsNullOrEmpty(Model?.thumbnail_url) ? Url.Content("~/Content/no-image.png") : Model.thumbnail_url)" class="preview-thumb" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Giá gốc</label>
+                    @Html.TextBoxFor(m => m.original_price, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                </div>
+
+                <div class="form-group">
+                    <label>Giá bán</label>
+                    @Html.TextBoxFor(m => m.sale_price, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                </div>
+
+                <div class="form-group">
+                    <label>Số lượng tồn (stock_quantity)</label>
+                    @Html.TextBoxFor(m => m.stock_quantity, new { @class = "form-control", type = "number", min = "0" })
+                </div>
+            </div>
+
+            <div class="col-full">
+                <div class="form-group">
+                    <label>Mô tả ngắn</label>
+                    @Html.TextAreaFor(m => m.description, new { @class = "form-control", rows = 3 })
+                </div>
+
+                <div class="form-group">
+                    <label>Nội dung chi tiết</label>
+                    @Html.TextAreaFor(m => m.content, new { @class = "form-control", rows = 8, placeholder = "Hướng dẫn sử dụng, công dụng, cảnh báo..." })
+                    <div class="small-note">Bạn có thể dùng editor (CKEditor) nếu cần rich-text.</div>
+                </div>
+            </div>
+
+            <div class="col-full">
+                <label>Thành phần (Ingredients)</label>
+                <div class="ingredients" id="ingredientsBox">
+                    <!-- nút thêm -->
+                    <div class="btn-group" style="margin-bottom:8px;">
+                        <button type="button" id="addIngredientBtn" class="btn ghost">+ Thêm thành phần</button>
+                        <div class="small-note" style="align-self:center;">Dữ liệu sẽ tự serialize sang JSON khi submit</div>
+                    </div>
+
+                    <!-- vùng chứa các dòng thành phần -->
+                    <div id="ingredientRows">
+                        @* Nếu model has ingredients JSON, bạn có thể render rows server-side. *@
+                    </div>
+                </div>
+
+                <!-- hidden input chứa JSON ingredients -->
+                @Html.HiddenFor(m => m.ingredients, new { id = "ingredientsJson" })
+            </div>
+
+            <div class="col-full" style="margin-top:12px;">
+                <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:320px;">
+                        <label>Chống chỉ định</label>
+                        @Html.TextAreaFor(m => m.contraindications, new { @class = "form-control", rows = 4 })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cần kê đơn?</label>
+                        <div>
+                            @Html.CheckBoxFor(m => m.prescription_required)
+                            <span class="small-note">Đánh dấu nếu sản phẩm là thuốc kê đơn</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-full" style="margin-top:12px;">
+                <label>Ảnh chi tiết sản phẩm (có thể upload nhiều)</label>
+                <div>
+                    <input type="file" id="imageFiles" name="imageFiles" accept="image/*" multiple />
+                    <div class="small-note">Chọn nhiều ảnh để hiển thị gallery. Kéo thả không hỗ trợ ở demo này.</div>
+                </div>
+
+                <div class="images-grid" id="imagesPreview"></div>
+            </div>
+
+        </div>
+
+        <div class="btn-group" style="margin-top:14px;">
+            <button type="submit" class="btn">Lưu sản phẩm</button>
+            <a href="@Url.Action("Index","Product")" class="btn secondary">Hủy</a>
+        </div>
+    }
+</div>
+
+<script>
+    // Preview thumbnail
+    document.getElementById('thumbnailFile').addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+            document.getElementById('thumbPreview').src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Preview multiple images
+    document.getElementById('imageFiles').addEventListener('change', function (e) {
+        var files = e.target.files;
+        var preview = document.getElementById('imagesPreview');
+        preview.innerHTML = '';
+        for (var i = 0; i < files.length; i++) {
+            (function (f, idx) {
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    var card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.innerHTML = '<img src="' + ev.target.result + '" alt="img' + idx + '"><div>Thứ tự: <input type="number" name="imageOrders" value="' + (idx + 1) + '" style="width:54px;border:1px solid #e6eef3;border-radius:6px;padding:4px" /></div>';
+                    preview.appendChild(card);
+                };
+                reader.readAsDataURL(f);
+            })(files[i], i);
+        }
+    });
+
+    // Ingredients dynamic rows -> sẽ serialize vào hidden #ingredientsJson
+    (function () {
+        var rowsBox = document.getElementById('ingredientRows');
+        var hidden = document.getElementById('ingredientsJson');
+        function renderRow(data) {
+            data = data || { name: '', amount: '', unit: '' };
+            var div = document.createElement('div');
+            div.className = 'ingredient-row';
+            div.innerHTML = '<input type="text" class="ing-name" placeholder="Tên thành phần" value="' + (data.name||'') + '" />'
+                + '<input type="text" class="ing-amount" placeholder="Số lượng" value="' + (data.amount||'') + '" />'
+                + '<input type="text" class="ing-unit" placeholder="Đơn vị (mg, ml...)" value="' + (data.unit||'') + '" />'
+                + '<button type="button" class="btn ghost remove-ing">Xóa</button>';
+            rowsBox.appendChild(div);
+
+            div.querySelector('.remove-ing').addEventListener('click', function () {
+                div.remove();
+                syncIngredients();
+            });
+
+            var inputs = div.querySelectorAll('input');
+            inputs.forEach(function(inp){ inp.addEventListener('input', syncIngredients); });
+            syncIngredients();
+        }
+
+        document.getElementById('addIngredientBtn').addEventListener('click', function () { renderRow(); });
+
+        // nếu model có ingredients (JSON), render server-side (string)
+// THAY BẰNG ĐOẠN CODE NÀY
+
+        try {
+
+            var data = @Html.Raw(Model?.ingredients ?? "[]");
+
+            // 'data' bây giờ đã là một mảng JavaScript, không cần parse
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(function(item) {
+                    renderRow(item); // Gọi hàm renderRow cho mỗi thành phần
+                });
+            }
+        } catch (ex) {
+            console.error("Lỗi khi render thành phần:", ex);
+            // Nếu có lỗi, ít nhất ta cũng biết trong console
+        }
+
+        function syncIngredients() {
+            var rows = rowsBox.querySelectorAll('.ingredient-row');
+            var arr = [];
+            rows.forEach(function (r) {
+                var name = r.querySelector('.ing-name').value.trim();
+                var amount = r.querySelector('.ing-amount').value.trim();
+                var unit = r.querySelector('.ing-unit').value.trim();
+                if (name || amount || unit) arr.push({ name: name, amount: amount, unit: unit });
+            });
+            hidden.value = JSON.stringify(arr);
+        }
+
+        // ensure sync before submit
+        var form = document.querySelector('.product-form form');
+        form.addEventListener('submit', function () { syncIngredients(); });
+    })();
+</script>

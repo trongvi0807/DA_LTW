@@ -1,0 +1,258 @@
+﻿@model IEnumerable<DA_LTW.Models.product>
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<style>
+    /* ---------- Product Admin Styles ---------- */
+.product-admin {
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #2d3748;
+  padding: 18px;
+  background: #f6f9fb;
+}
+
+/* Title */
+.product-admin h2 {
+  margin: 0 0 18px 0;
+  font-size: 22px;
+  color: #1f7a67; /* xanh chủ đạo */
+  font-weight: 700;
+}
+
+/* Search / actions row */
+.product-admin form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.product-admin form input[type="text"][name="q"] {
+  min-width: 260px;
+  max-width: 420px;
+  padding: 8px 12px;
+  border: 1px solid #e3e8ee;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: box-shadow .18s ease, border-color .18s ease;
+}
+.product-admin form input[type="text"][name="q"]:focus {
+  outline: none;
+  border-color: #20c997;
+  box-shadow: 0 0 0 4px rgba(32,201,151,0.08);
+}
+
+/* Buttons */
+.product-admin .btn,
+.product-admin button.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.product-admin a.btn,
+.product-admin button.btn {
+  background: linear-gradient(90deg,#20c997,#17a2b8);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(23,162,184,0.08);
+}
+.product-admin a.btn:hover,
+.product-admin button.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Table */
+.product-admin .table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+}
+
+.product-admin .table thead {
+  background: linear-gradient(90deg,#f4f7f9,#eef6f5);
+}
+
+.product-admin .table th,
+.product-admin .table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+}
+
+.product-admin .table th {
+  font-weight: 700;
+  font-size: 13px;
+  color: #475569;
+}
+
+/* Thumbnail */
+.product-admin .table img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 4px 10px rgba(16,24,40,0.04);
+}
+
+/* Row hover */
+.product-admin .table tbody tr:hover {
+  background: #fbfcfe;
+}
+
+/* Action links */
+.product-admin .table a {
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  margin-right: 8px;
+  font-size: 13px;
+}
+.product-admin .table a:hover { color: #0ea5a0; }
+
+/* Pagination simple */
+.product-admin > div.pagination {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.product-admin > div.pagination a,
+.product-admin > div.pagination span {
+  display: inline-block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #475569;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+.product-admin > div.pagination a:hover {
+  background: #f1f7f6;
+  border-color: #e6f3ef;
+  color: #0f766e;
+}
+.product-admin > div.pagination span {
+  background: linear-gradient(90deg,#ecfdf5,#effaf8);
+  color: #065f46;
+  border: 1px solid #d1fae5;
+}
+
+    .product-admin .btn-secondary {
+        background: linear-gradient(90deg, #64748b, #475569);
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(71, 85, 105, 0.15);
+    }
+
+        .product-admin .btn-secondary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(90deg, #475569, #334155);
+        }
+
+
+/* Responsive: collapse table on small screens */
+@@media (max-width: 780px) {
+  .product-admin form { justify-content: space-between; }
+  .product-admin .table th:nth-child(4),
+  .product-admin .table td:nth-child(4),
+  .product-admin .table th:nth-child(5),
+  .product-admin .table td:nth-child(5) {
+    display: none; /* ẩn cột giá, sku để tiết kiệm không gian */
+  }
+  .product-admin .table img { width: 48px; height: 48px; }
+}
+
+/* Utility small helpers */
+.text-muted { color: #94a3b8; font-size: 13px; }
+.small { font-size: 13px; }
+
+</style>
+
+<div class="product-admin">
+    <h2>Quản lý sản phẩm</h2>
+    <form method="get" action="@Url.Action("Index")">
+        <input type="text" name="q" value="@ViewBag.Query" placeholder="Tìm theo tên hoặc SKU" />
+        <button type="submit" class="btn btn-secondary">Tìm</button>
+        <a href="@Url.Action("Create")" class="btn">Thêm sản phẩm</a>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ảnh</th>
+                <th>Tên</th>
+                <th>SKU</th>
+                <td>Giá gốc</td>
+                <th>Giá sau khi giảm</th>
+                <th>Số lượng còn lại</th>
+                <td>Mô tả</td>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int i = (ViewBag.Page - 1) * ViewBag.PageSize + 1; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td>
+                        <img src="@item.thumbnail_url" style="width:60px;height:60px;object-fit:cover" />
+                    </td>
+                    <td>@item.name</td>
+                    <td>@item.sku</td>
+                    <td>@item.original_price</td>
+                    <td>@item.sale_price</td>
+                    <td>@item.stock_quantity</td>
+                    <td>@item.description</td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Product", new { id = item.id })">Sửa</a> |
+                        <a onclick="return confirm('Xóa?')" href="@Url.Action("Delete", new { id = item.id })">Xóa</a>
+                    </td>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+
+</div>
+
+
+
+
+
+<!-- Simple paging UI -->
+@{
+    int total = (int)ViewBag.Total;
+    int page = (int)ViewBag.Page;
+    int pageSize = (int)ViewBag.PageSize;
+    int totalPage = (int)Math.Ceiling((double)total / pageSize);
+}
+@if (totalPage > 1)
+{
+    <div>
+        @for (int p = 1; p <= totalPage; p++)
+        {
+            if (p == page)
+            {<span>@p</span> }
+        else
+        { <a href="@Url.Action("Index", new { q = ViewBag.Query, page = p })">@p</a>}
+}
+    </div>
+}
