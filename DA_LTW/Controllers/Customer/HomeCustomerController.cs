@@ -28,5 +28,31 @@ namespace DA_LTW.Controllers.Customer
             var result = db.users.FirstOrDefault();
             return View(result);
         }
+        public ActionResult HT_DSDMSP()
+        {
+            var dsdm = db.categories.ToList();
+            return PartialView(dsdm);
+        }
+        public ActionResult HT_DSSP_OFDM(int id)
+        {
+            var products = db.products
+                             .Where(p => p.category_id == id && p.is_active == true)
+                             .OrderByDescending(p => p.created_at)
+                             .ToList();
+
+            return View(products);
+        }
+        public ActionResult SP_DropDown (string category)
+        {
+            var products = db.products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                products = products.Where(p => p.category.slug == category);
+            }
+
+            return View(products.ToList());
+        }
+
     }
 }

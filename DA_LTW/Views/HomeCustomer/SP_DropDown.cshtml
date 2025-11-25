@@ -1,0 +1,242 @@
+﻿@model IEnumerable<DA_LTW.Models.product>
+
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+@section Styles {
+    <style>
+        .featured-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .featured-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .featured-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 8px 0;
+        }
+
+        .featured-subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .products-grid {
+            display: grid;
+            /* Hiển thị các cột có độ rộng tối thiểu 220px, tự động lấp đầy */
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                border-color: #d1d5db;
+            }
+
+        .product-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px; /* Tăng chiều cao ảnh */
+            background: #f9fafb;
+            overflow: hidden;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Đổi thành contain để ảnh không bị cắt */
+            padding: 10px; /* Thêm padding để ảnh không bị dính sát viền */
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .badge-sale {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #ef4444;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Quan trọng: giúp card-actions luôn ở dưới cùng */
+        }
+
+        .product-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 10px 0;
+            min-height: 48px; /* Giữ 2 dòng */
+            line-height: 1.5;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .price-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .product-price {
+            color: #dc2626; /* Màu đỏ cho giá sale */
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .product-old-price {
+            color: #9ca3af;
+            text-decoration: line-through;
+            font-size: 0.9rem;
+        }
+
+        .card-actions {
+            margin-top: auto; /* Quan trọng: Đẩy nút xuống dưới cùng */
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-view, .btn-add {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            text-decoration: none; /* Bỏ gạch chân cho thẻ a */
+        }
+
+        .btn-view {
+            background: #fff;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+            .btn-view:hover {
+                background: #f9fafb;
+                border-color: #adb5bd;
+            }
+
+        .btn-add {
+            background: #20c997; /* Màu xanh ngọc chủ đạo */
+            color: #fff;
+            border-color: #20c997;
+        }
+
+            .btn-add:hover {
+                background: #1aa982;
+                border-color: #1aa982;
+                box-shadow: 0 4px 12px rgba(32, 201, 151, 0.3);
+            }
+    </style>
+}
+
+<div class="featured-container">
+    <div class="featured-header">
+        <h2 class="featured-title">Sản phẩm liên quan</h2>
+        <p class="featured-subtitle">Những sản phẩm chất lượng được tin dùng nhất</p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div style="text-align: center; padding: 40px 20px; color: #6b7280;">
+            Chưa có sản phẩm nào để hiển thị.
+        </div>
+    }
+    else
+    {
+        @functions {
+            // Helper để format giá tiền sang định dạng Việt Nam
+            public static string FormatPrice(decimal value)
+            {
+                return value.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) + "đ";
+            }
+        }
+
+        <div class="products-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <a href="@Url.Action("Detail", "Product", new { slug = product.slug })">
+                            <img src="@product.thumbnail_url"
+                                 alt="@product.name" class="product-img" />
+                        </a>
+
+                        @* Logic tính toán và hiển thị badge giảm giá - AN TOÀN & HIỆU QUẢ *@
+                        @if (product.sale_price < product.original_price && product.original_price > 0)
+                        {
+                            var discount = (int)Math.Round((1 - (product.sale_price / product.original_price)) * 100);
+                            <span class="badge-sale">Giảm @discount%</span>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <h3 class="product-name">
+                            <a href="@Url.Action("Detail", "Product", new { slug = product.slug })" title="@product.name" style="text-decoration: none; color: inherit;">
+                                @product.name
+                            </a>
+                        </h3>
+
+                        <div class="price-wrap">
+                            @* Hiển thị giá bán sau cùng *@
+                            <span class="product-price">@FormatPrice(product.sale_price)</span>
+
+                            @* Chỉ hiển thị giá gốc khi có giảm giá *@
+                            @if (product.sale_price < product.original_price)
+                            {
+                                <span class="product-old-price">@FormatPrice(product.original_price)</span>
+                            }
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="@Url.Action("Detail", "Product", new { slug = product.slug })" class="btn-view">Xem chi tiết</a>
+                            <a href="@Url.Action("AddToCart", "Cart", new { area = "Customer", productId = product.id })" class="btn-add">Thêm vào giỏ</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

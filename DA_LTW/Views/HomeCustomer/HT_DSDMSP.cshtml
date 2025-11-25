@@ -1,0 +1,24 @@
+﻿@model IEnumerable<DA_LTW.Models.category>
+
+<h3>Danh mục sản phẩm</h3>
+<ul>
+    @foreach(var dm in Model)
+            {
+                if(dm.parent_id == null)
+                {
+                    <li>
+                        <a href="#"><i class="fa-solid fa-prescription-bottle-medical"></i>@dm.name</a>
+                        <ul>
+                            @foreach (var dmc in Model)
+                            {
+                                if (dmc.parent_id == dm.id)
+                                {
+                                    <li><a href="@Url.Action("HT_DSSP_OFDM","HomeCustomer", new {id = dmc.id})"><i class="fa-solid fa-star-half-stroke"></i>@dmc.name</a></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }
+            }
+</ul>
+

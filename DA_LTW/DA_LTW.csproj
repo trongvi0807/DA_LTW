@@ -358,6 +358,9 @@
     <Content Include="Views\OrderManagement\Details.cshtml" />
     <Content Include="Views\Order\Tracking.cshtml" />
     <Content Include="Views\Order\OrderHistory.cshtml" />
+    <Content Include="Views\HomeCustomer\HT_DSDMSP.cshtml" />
+    <Content Include="Views\HomeCustomer\HT_DSSP_OFDM.cshtml" />
+    <Content Include="Views\HomeCustomer\SP_DropDown.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

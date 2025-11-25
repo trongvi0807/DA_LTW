@@ -98,13 +98,13 @@
                 <li class="dropdown">
                     <a href="#"><i class="fa-solid fa-pills"></i> Thuốc <i class="fa-solid fa-chevron-down"></i></a>
                     <ul class="submenu">
-                        <li><a href="#">Thuốc cảm cúm</a></li>
-                        <li><a href="#">Thuốc đau đầu</a></li>
+                        <li><a href="@Url.Action("SP_DropDown", "HomeCustomer", new { category = "thuoc-ho-cam-cum" })">Thuốc cảm cúm</a></li>
+                        <li><a href="@Url.Action("SP_DropDown", "HomeCustomer", new { category = "thuoc-giam-dau-ha-sot" })">Thuốc đau đầu</a></li>
                         <li class="dropdown">
                             <a href="#">Thuốc bổ <i class="fa-solid fa-chevron-right"></i></a>
                             <ul class="submenu">
-                                <li><a href="#">Vitamin C</a></li>
-                                <li><a href="#">Canxi</a></li>
+                                <li><a href="@Url.Action("SP_DropDown", "HomeCustomer", new { category = "vitamin-va-khoang-chat" })">Vitamin C</a></li>
+                                <li><a href="@Url.Action("SP_DropDown", "HomeCustomer", new { category = "canxi" })">Canxi</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -164,15 +164,7 @@
     </header>
     <div class="container">
         <aside class="sidebar">
-            <h3>Danh mục sản phẩm</h3>
-            <ul>
-                <li><a href="#"><i class="fa-solid fa-capsules"></i> Thuốc không kê đơn</a></li>
-                <li><a href="#"><i class="fa-solid fa-prescription-bottle-medical"></i> Thuốc kê đơn</a></li>
-                <li><a href="#"><i class="fa-solid fa-baby"></i> Sản phẩm cho trẻ em</a></li>
-                <li><a href="#"><i class="fa-solid fa-female"></i> Sản phẩm phụ nữ</a></li>
-                <li><a href="#"><i class="fa-solid fa-male"></i> Sản phẩm nam giới</a></li>
-                <li><a href="#"><i class="fa-solid fa-star-half-stroke"></i> Sản phẩm nổi bật</a></li>
-            </ul>
+            @Html.Action("HT_DSDMSP", "HomeCustomer")
             <h3>Lọc theo giá</h3>
             <input type="range" min="0" max="1000000" />
         </aside>
