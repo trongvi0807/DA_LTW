@@ -4,32 +4,37 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="07b4267d370d4702b282e994ffd5fe70" Name="Diagram1">
-        <EntityTypeShape EntityType="db_cnpmModel.brand" Width="1.5" PointX="0.75" PointY="8.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.cart_items" Width="1.5" PointX="5.25" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.cart" Width="1.5" PointX="3" PointY="14" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.category" Width="1.5" PointX="0.75" PointY="3.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.coupon_conditions" Width="1.5" PointX="13" PointY="7.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.coupon" Width="1.5" PointX="10.75" PointY="8" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.district" Width="1.5" PointX="11" PointY="3.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.order_items" Width="1.5" PointX="8.25" PointY="8" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.order" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.post_categories" Width="1.5" PointX="7.75" PointY="13.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.post" Width="1.5" PointX="10" PointY="13.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.product_images" Width="1.5" PointX="5.25" PointY="16.5" IsExpanded="true" />
+      <Diagram DiagramId="3ea1595064eb424eb5e0d6ce79e4fb2e" Name="Diagram1">
+        <EntityTypeShape EntityType="db_cnpmModel.brand" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.cart_items" Width="1.5" PointX="5.25" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.cart" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.category" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.comment_medias" Width="1.5" PointX="10.5" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.comment" Width="1.5" PointX="8.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.coupon_conditions" Width="1.5" PointX="11" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.coupon" Width="1.5" PointX="8.75" PointY="14.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.district" Width="1.5" PointX="12" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.order_items" Width="1.5" PointX="5.25" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.order" Width="1.5" PointX="3" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.post_categories" Width="1.5" PointX="7.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.post" Width="1.5" PointX="13" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.product_images" Width="1.5" PointX="5.25" PointY="21.75" IsExpanded="true" />
         <EntityTypeShape EntityType="db_cnpmModel.product" Width="1.5" PointX="3" PointY="6.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.province" Width="1.5" PointX="8.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.role" Width="1.5" PointX="0.75" PointY="18.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.sysdiagram" Width="1.5" PointX="2.75" PointY="3.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.user_roles" Width="1.5" PointX="3" PointY="18.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.user" Width="1.5" PointX="0.75" PointY="13.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="db_cnpmModel.ward" Width="1.5" PointX="13.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.province" Width="1.5" PointX="9.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.role" Width="1.5" PointX="3.75" PointY="25.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.user_roles" Width="1.5" PointX="6" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.user" Width="1.5" PointX="0.75" PointY="14.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_cnpmModel.ward" Width="1.5" PointX="14.25" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="db_cnpmModel.fk_products_barand" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.FK_cart_items_carts" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.FK_cart_items_variants" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.FK_carts_users" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.fk_categories_parent" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.fk_products_category" ManuallyRouted="false" />
+        <AssociationConnector Association="db_cnpmModel.fk_comment_medias_comment" ManuallyRouted="false" />
+        <AssociationConnector Association="db_cnpmModel.fk_comments_parent" ManuallyRouted="false" />
+        <AssociationConnector Association="db_cnpmModel.fk_comments_product" ManuallyRouted="false" />
+        <AssociationConnector Association="db_cnpmModel.fk_comments_user" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.fk_coupon_conditions_coupons" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.fk_districts_provinces" ManuallyRouted="false" />
         <AssociationConnector Association="db_cnpmModel.fk_wards_districts" ManuallyRouted="false" />

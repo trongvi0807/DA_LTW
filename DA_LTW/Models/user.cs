@@ -18,6 +18,7 @@ namespace DA_LTW.Models
         public user()
         {
             this.carts = new HashSet<cart>();
+            this.comments = new HashSet<comment>();
             this.orders = new HashSet<order>();
             this.posts = new HashSet<post>();
             this.user_roles = new HashSet<user_roles>();
@@ -37,6 +38,8 @@ namespace DA_LTW.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart> carts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<comment> comments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order> orders { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -63,6 +63,36 @@
           <Property Name="created_by" Type="nvarchar" MaxLength="100" />
           <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
         </EntityType>
+        <EntityType Name="comment_medias">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="comment_id" Type="int" Nullable="false" />
+          <Property Name="media_type" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="media_url" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="created_at" Type="datetime2" Precision="7" />
+          <Property Name="updated_at" Type="datetime2" Precision="7" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="comments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="product_id" Type="int" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="parent_id" Type="int" />
+          <Property Name="content" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="rating" Type="tinyint" />
+          <Property Name="is_verified_purchase" Type="bit" />
+          <Property Name="status" Type="nvarchar" MaxLength="20" />
+          <Property Name="created_at" Type="datetime2" Precision="7" />
+          <Property Name="updated_at" Type="datetime2" Precision="7" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="coupon_conditions">
           <Key>
             <PropertyRef Name="id" />
@@ -242,16 +272,6 @@
           <Property Name="created_by" Type="nvarchar" MaxLength="100" />
           <Property Name="updated_by" Type="nvarchar" MaxLength="100" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
         <EntityType Name="user_roles">
           <Key>
             <PropertyRef Name="id" />
@@ -337,6 +357,56 @@
             </Principal>
             <Dependent Role="categories1">
               <PropertyRef Name="parent_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comment_medias_comment">
+          <End Role="comments" Type="Self.comments" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="comment_medias" Type="Self.comment_medias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comment_medias">
+              <PropertyRef Name="comment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_parent">
+          <End Role="comments" Type="Self.comments" Multiplicity="0..1" />
+          <End Role="comments1" Type="Self.comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments1">
+              <PropertyRef Name="parent_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_product">
+          <End Role="products" Type="Self.products" Multiplicity="1" />
+          <End Role="comments" Type="Self.comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="products">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_user">
+          <End Role="users" Type="Self.users" Multiplicity="1" />
+          <End Role="comments" Type="Self.comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments">
+              <PropertyRef Name="user_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -513,6 +583,8 @@
           <EntitySet Name="cart_items" EntityType="Self.cart_items" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="carts" EntityType="Self.carts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="categories" EntityType="Self.categories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="comment_medias" EntityType="Self.comment_medias" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="comments" EntityType="Self.comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="coupon_conditions" EntityType="Self.coupon_conditions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="coupons" EntityType="Self.coupons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="districts" EntityType="Self.districts" Schema="dbo" store:Type="Tables" />
@@ -524,7 +596,6 @@
           <EntitySet Name="products" EntityType="Self.products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="provinces" EntityType="Self.provinces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="roles" EntityType="Self.roles" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wards" EntityType="Self.wards" Schema="dbo" store:Type="Tables" />
@@ -543,6 +614,22 @@
           <AssociationSet Name="fk_categories_parent" Association="Self.fk_categories_parent">
             <End Role="categories" EntitySet="categories" />
             <End Role="categories1" EntitySet="categories" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comment_medias_comment" Association="Self.fk_comment_medias_comment">
+            <End Role="comments" EntitySet="comments" />
+            <End Role="comment_medias" EntitySet="comment_medias" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_parent" Association="Self.fk_comments_parent">
+            <End Role="comments" EntitySet="comments" />
+            <End Role="comments1" EntitySet="comments" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_product" Association="Self.fk_comments_product">
+            <End Role="products" EntitySet="products" />
+            <End Role="comments" EntitySet="comments" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_user" Association="Self.fk_comments_user">
+            <End Role="users" EntitySet="users" />
+            <End Role="comments" EntitySet="comments" />
           </AssociationSet>
           <AssociationSet Name="fk_coupon_conditions_coupons" Association="Self.fk_coupon_conditions_coupons">
             <End Role="coupons" EntitySet="coupons" />
@@ -671,6 +758,42 @@
           <NavigationProperty Name="categories1" Relationship="Self.fk_categories_parent" FromRole="categories" ToRole="categories1" />
           <NavigationProperty Name="category1" Relationship="Self.fk_categories_parent" FromRole="categories1" ToRole="categories" />
           <NavigationProperty Name="products" Relationship="Self.fk_products_category" FromRole="categories" ToRole="products" />
+        </EntityType>
+        <EntityType Name="comment_medias">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="comment_id" Type="Int32" Nullable="false" />
+          <Property Name="media_type" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="media_url" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="created_at" Type="DateTime" Precision="7" />
+          <Property Name="updated_at" Type="DateTime" Precision="7" />
+          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="comment" Relationship="Self.fk_comment_medias_comment" FromRole="comment_medias" ToRole="comments" />
+        </EntityType>
+        <EntityType Name="comment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="product_id" Type="Int32" Nullable="false" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="parent_id" Type="Int32" />
+          <Property Name="content" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="rating" Type="Byte" />
+          <Property Name="is_verified_purchase" Type="Boolean" />
+          <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="created_at" Type="DateTime" Precision="7" />
+          <Property Name="updated_at" Type="DateTime" Precision="7" />
+          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="comment_medias" Relationship="Self.fk_comment_medias_comment" FromRole="comments" ToRole="comment_medias" />
+          <NavigationProperty Name="comments1" Relationship="Self.fk_comments_parent" FromRole="comments" ToRole="comments1" />
+          <NavigationProperty Name="comment1" Relationship="Self.fk_comments_parent" FromRole="comments1" ToRole="comments" />
+          <NavigationProperty Name="product" Relationship="Self.fk_comments_product" FromRole="comments" ToRole="products" />
+          <NavigationProperty Name="user" Relationship="Self.fk_comments_user" FromRole="comments" ToRole="users" />
         </EntityType>
         <EntityType Name="coupon_conditions">
           <Key>
@@ -844,6 +967,7 @@
           <NavigationProperty Name="brand" Relationship="Self.fk_products_barand" FromRole="products" ToRole="brands" />
           <NavigationProperty Name="cart_items" Relationship="Self.FK_cart_items_variants" FromRole="products" ToRole="cart_items" />
           <NavigationProperty Name="category" Relationship="Self.fk_products_category" FromRole="products" ToRole="categories" />
+          <NavigationProperty Name="comments" Relationship="Self.fk_comments_product" FromRole="products" ToRole="comments" />
           <NavigationProperty Name="order_items" Relationship="Self.fk_orderItem_product" FromRole="products" ToRole="order_items" />
           <NavigationProperty Name="product_images" Relationship="Self.fk_product_images_products" FromRole="products" ToRole="product_images" />
         </EntityType>
@@ -871,16 +995,6 @@
           <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="user_roles" Relationship="Self.fk_userRole_roles" FromRole="roles" ToRole="user_roles" />
-        </EntityType>
-        <EntityType Name="sysdiagram">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <EntityType Name="user_roles">
           <Key>
@@ -912,6 +1026,7 @@
           <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="updated_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="carts" Relationship="Self.FK_carts_users" FromRole="users" ToRole="carts" />
+          <NavigationProperty Name="comments" Relationship="Self.fk_comments_user" FromRole="users" ToRole="comments" />
           <NavigationProperty Name="orders" Relationship="Self.fk_order_user" FromRole="users" ToRole="orders" />
           <NavigationProperty Name="posts" Relationship="Self.fk_posts_users" FromRole="users" ToRole="posts" />
           <NavigationProperty Name="user_roles" Relationship="Self.fk_userRole_users" FromRole="users" ToRole="user_roles" />
@@ -998,6 +1113,56 @@
             </Principal>
             <Dependent Role="products">
               <PropertyRef Name="category_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comment_medias_comment">
+          <End Role="comments" Type="Self.comment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="comment_medias" Type="Self.comment_medias" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comment_medias">
+              <PropertyRef Name="comment_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_parent">
+          <End Role="comments" Type="Self.comment" Multiplicity="0..1" />
+          <End Role="comments1" Type="Self.comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="comments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments1">
+              <PropertyRef Name="parent_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_product">
+          <End Role="products" Type="Self.product" Multiplicity="1" />
+          <End Role="comments" Type="Self.comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="products">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments">
+              <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_comments_user">
+          <End Role="users" Type="Self.user" Multiplicity="1" />
+          <End Role="comments" Type="Self.comment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="comments">
+              <PropertyRef Name="user_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1150,6 +1315,8 @@
           <EntitySet Name="cart_items" EntityType="Self.cart_items" />
           <EntitySet Name="carts" EntityType="Self.cart" />
           <EntitySet Name="categories" EntityType="Self.category" />
+          <EntitySet Name="comment_medias" EntityType="Self.comment_medias" />
+          <EntitySet Name="comments" EntityType="Self.comment" />
           <EntitySet Name="coupon_conditions" EntityType="Self.coupon_conditions" />
           <EntitySet Name="coupons" EntityType="Self.coupon" />
           <EntitySet Name="districts" EntityType="Self.district" />
@@ -1161,7 +1328,6 @@
           <EntitySet Name="products" EntityType="Self.product" />
           <EntitySet Name="provinces" EntityType="Self.province" />
           <EntitySet Name="roles" EntityType="Self.role" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
           <EntitySet Name="user_roles" EntityType="Self.user_roles" />
           <EntitySet Name="users" EntityType="Self.user" />
           <EntitySet Name="wards" EntityType="Self.ward" />
@@ -1188,6 +1354,22 @@
           <AssociationSet Name="fk_products_category" Association="Self.fk_products_category">
             <End Role="categories" EntitySet="categories" />
             <End Role="products" EntitySet="products" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comment_medias_comment" Association="Self.fk_comment_medias_comment">
+            <End Role="comments" EntitySet="comments" />
+            <End Role="comment_medias" EntitySet="comment_medias" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_parent" Association="Self.fk_comments_parent">
+            <End Role="comments" EntitySet="comments" />
+            <End Role="comments1" EntitySet="comments" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_product" Association="Self.fk_comments_product">
+            <End Role="products" EntitySet="products" />
+            <End Role="comments" EntitySet="comments" />
+          </AssociationSet>
+          <AssociationSet Name="fk_comments_user" Association="Self.fk_comments_user">
+            <End Role="users" EntitySet="users" />
+            <End Role="comments" EntitySet="comments" />
           </AssociationSet>
           <AssociationSet Name="fk_coupon_conditions_coupons" Association="Self.fk_coupon_conditions_coupons">
             <End Role="coupons" EntitySet="coupons" />
@@ -1299,6 +1481,38 @@
                 <ScalarProperty Name="parent_id" ColumnName="parent_id" />
                 <ScalarProperty Name="slug" ColumnName="slug" />
                 <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="updated_by" ColumnName="updated_by" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="comment_medias">
+            <EntityTypeMapping TypeName="db_cnpmModel.comment_medias">
+              <MappingFragment StoreEntitySet="comment_medias">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="comment_id" ColumnName="comment_id" />
+                <ScalarProperty Name="media_type" ColumnName="media_type" />
+                <ScalarProperty Name="media_url" ColumnName="media_url" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="updated_by" ColumnName="updated_by" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="comments">
+            <EntityTypeMapping TypeName="db_cnpmModel.comment">
+              <MappingFragment StoreEntitySet="comments">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="parent_id" ColumnName="parent_id" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="rating" ColumnName="rating" />
+                <ScalarProperty Name="is_verified_purchase" ColumnName="is_verified_purchase" />
+                <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="created_at" ColumnName="created_at" />
                 <ScalarProperty Name="updated_at" ColumnName="updated_at" />
                 <ScalarProperty Name="created_by" ColumnName="created_by" />
@@ -1493,17 +1707,6 @@
                 <ScalarProperty Name="updated_at" ColumnName="updated_at" />
                 <ScalarProperty Name="created_by" ColumnName="created_by" />
                 <ScalarProperty Name="updated_by" ColumnName="updated_by" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="db_cnpmModel.sysdiagram">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -1,41 +1,53 @@
-﻿// Trong DA_LTW.Filters/AdminAuthorizeAttribute.cs (ví dụ)
-
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing; // Cần thư viện này để dùng RouteValueDictionary
 
-namespace DA_LTW.Filters // Đặt trong namespace của dự án của bạn
+namespace DA_LTW.Filters
 {
     public class AdminAuthorizeAttribute : AuthorizeAttribute
     {
+        // 1. Kiểm tra quyền truy cập (Trả về True/False)
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            // 1. Kiểm tra Session["RoleCode"]
-            string roleCode = httpContext.Session["RoleCode"] as string;
+            // Lấy session
+            var userSession = httpContext.Session["User"];
+            var roleCode = httpContext.Session["RoleCode"] as string;
 
-            // 2. Chỉ cho phép nếu vai trò là ADMIN
-            if (!string.IsNullOrEmpty(roleCode) && roleCode == "ADMIN")
+            // Điều kiện để được vào: Phải có User và RoleCode là "ADMIN"
+            if (userSession != null && !string.IsNullOrEmpty(roleCode) && roleCode == "ADMIN")
             {
-                return true;
+                return true; // Cho phép truy cập
             }
 
-            return false;
+            return false; // Từ chối truy cập -> Sẽ nhảy xuống hàm HandleUnauthorizedRequest
         }
 
+        // 2. Xử lý khi bị từ chối truy cập
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
-            // Kiểm tra xem người dùng đã đăng nhập chưa
-            if (filterContext.HttpContext.Session["UserId"] == null)
+            // Trường hợp 1: Chưa đăng nhập (Session Null)
+            if (filterContext.HttpContext.Session["User"] == null)
             {
-                // Chuyển hướng về trang đăng nhập
-                filterContext.Result = new RedirectResult("/Login/Index");
+                // Chuyển hướng về trang Login + Kèm theo ReturnUrl
+                // ReturnUrl giúp user sau khi login sẽ tự động quay lại trang Admin đang vào dở
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
+                    {
+                        { "controller", "Login" },
+                        { "action", "Index" },
+                        { "ReturnUrl", filterContext.HttpContext.Request.RawUrl } // Lấy URL hiện tại
+                    });
             }
+            // Trường hợp 2: Đã đăng nhập nhưng KHÔNG PHẢI ADMIN
             else
             {
-                // Đã đăng nhập nhưng không phải Admin, chuyển về trang chủ Khách hàng
-                // Đã sửa đường dẫn để gọi Controller/Action cụ thể, an toàn hơn
+                // Chuyển hướng sang trang báo lỗi 403 (Forbidden)
                 filterContext.Result = new RedirectToRouteResult(
-                    new System.Web.Routing.RouteValueDictionary(new { controller = "HomeCustomer", action = "Index", area = "" })
-                );
+                    new RouteValueDictionary
+                    {
+                        { "controller", "Error" }, // Tên Controller lỗi
+                        { "action", "Page403" }    // Tên Action lỗi
+                    });
             }
         }
     }

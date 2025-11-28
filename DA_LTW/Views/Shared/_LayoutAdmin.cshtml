@@ -22,7 +22,12 @@
                 <li><a href="@Url.Action("Index", "Product")"><i class="fa-solid fa-capsules"></i> Sản phẩm</a></li>
                 <li><a href="#"><i class="fa-solid fa-star-half-stroke"></i> Đánh giá</a></li>
                 <li><a href="#"><i class="fa-solid fa-users"></i> Người dùng</a></li>
-                <li><a href="#"><i class="fa-solid fa-ticket"></i> Phiếu giảm giá</a></li>
+                <li>
+                    <a href="@Url.Action("Index", "CouponManagement", new { area = "" })"
+                       class="@(ViewContext.RouteData.Values["controller"].ToString() == "CouponManagement" ? "active" : "")">
+                        <i class="fa-solid fa-ticket"></i> Phiếu giảm giá
+                    </a>
+                </li>
             </ul>
             <ul> <li><a href="@Url.Action("Logout", "HomeAdmin")">Đăng xuất</a></li></ul>
         </nav>

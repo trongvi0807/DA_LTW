@@ -98,17 +98,68 @@ namespace DA_LTW.Controllers.Customer
         }
 
 
+        // Trong CartController.cs
+        public ActionResult UpdateQuantity(int id, int quantity)
+        {
+            int userId = (int)Session["UserId"];
+
+            // 1. Lấy giỏ hàng của user
+            var cart = db.carts.FirstOrDefault(c => c.user_id == userId && c.status == "ACTIVE");
+            if (cart != null)
+            {
+                // 2. Tìm sản phẩm trong giỏ
+                var item = db.cart_items.FirstOrDefault(i => i.cart_id == cart.id && i.product_id == id);
+                if (item != null)
+                {
+                    // 3. Cập nhật số lượng
+                    item.quantity = quantity;
+
+                    // Nếu số lượng <= 0 thì xóa luôn
+                    if (item.quantity <= 0)
+                    {
+                        db.cart_items.Remove(item);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            // Quay lại trang giỏ hàng
+            return RedirectToAction("Index");
+        }
+
+
         // --------------------------------------------------------------
         // 🧾 TRANG XEM GIỎ HÀNG
         // --------------------------------------------------------------
         public ActionResult Index()
         {
-            int userId = (int)Session["UserId"];
-            var cart = db.carts.FirstOrDefault(c => c.user_id == userId && c.status == "ACTIVE");
-            if (cart == null)
-                return View(new List<cart_items>());
+            // 1. Kiểm tra đăng nhập
+            if (Session["UserId"] == null)
+            {
+                // Chưa đăng nhập -> Chuyển hướng sang Login
+                // Kèm theo ReturnUrl để đăng nhập xong quay lại đây ngay
+                return RedirectToAction("Index", "Login", new { ReturnUrl = Request.Url.PathAndQuery });
+            }
 
-            var items = db.cart_items.Where(i => i.cart_id == cart.id).ToList();
+            // 2. Lấy UserId an toàn (vì đã check null ở trên)
+            int userId = (int)Session["UserId"];
+
+            // 3. Lấy giỏ hàng ACTIVE
+            var cart = db.carts.FirstOrDefault(c => c.user_id == userId && c.status == "ACTIVE");
+
+            // Nếu chưa có giỏ hàng, trả về list rỗng để tránh lỗi View
+            if (cart == null)
+            {
+                return View(new List<cart_items>());
+            }
+
+            // 4. Lấy chi tiết giỏ hàng
+            // 💡 Mẹo: Nên thêm .Include("product") để lấy luôn tên/ảnh sản phẩm hiển thị ra View
+            var items = db.cart_items
+                          .Include("product") // Cần using System.Data.Entity;
+                          .Where(i => i.cart_id == cart.id)
+                          .ToList();
+
             return View(items);
         }
 

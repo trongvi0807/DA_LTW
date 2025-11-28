@@ -12,12 +12,17 @@ namespace DA_LTW.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class sysdiagram
+    public partial class comment_medias
     {
-        public string name { get; set; }
-        public int principal_id { get; set; }
-        public int diagram_id { get; set; }
-        public Nullable<int> version { get; set; }
-        public byte[] definition { get; set; }
+        public int id { get; set; }
+        public int comment_id { get; set; }
+        public string media_type { get; set; }
+        public string media_url { get; set; }
+        public Nullable<System.DateTime> created_at { get; set; }
+        public Nullable<System.DateTime> updated_at { get; set; }
+        public string created_by { get; set; }
+        public string updated_by { get; set; }
+    
+        public virtual comment comment { get; set; }
     }
 }

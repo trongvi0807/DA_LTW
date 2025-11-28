@@ -1,0 +1,823 @@
+﻿@model DA_LTW.ViewModels.ProductDetailViewModel
+@{
+    ViewBag.Title = Model.Product.name;
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+
+    // Lấy thông tin user đăng nhập để kiểm tra hiển thị form comment
+    var currentUser = Session["User"] as DA_LTW.Models.user;
+}
+
+@functions {
+    // Helper format tiền tệ
+    public static string FormatPrice(decimal value)
+    {
+        return value.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) + "₫";
+    }
+
+    // Helper hiển thị HTML ngôi sao (Frontend only)
+    public static string RenderStars(double rating)
+    {
+        string html = "";
+        int fullStars = (int)rating;
+        bool hasHalfStar = (rating - fullStars) >= 0.5;
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (i <= fullStars)
+            {
+                html += "<i class='fa-solid fa-star text-warning'></i>"; // Sao vàng
+            }
+            else if (i == fullStars + 1 && hasHalfStar)
+            {
+                html += "<i class='fa-solid fa-star-half-stroke text-warning'></i>"; // Sao nửa (nếu muốn support)
+            }
+            else
+            {
+                html += "<i class='fa-regular fa-star text-muted'></i>"; // Sao rỗng
+            }
+        }
+        return html;
+    }
+}
+
+<style>
+    /* --- CSS CŨ CỦA BẠN (GIỮ NGUYÊN) --- */
+    .product-detail-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin-bottom: 40px;
+        background: #fff;
+        border-radius: 8px;
+    }
+
+    .product-gallery {
+        flex: 0 0 45%;
+        max-width: 45%;
+        min-width: 320px;
+    }
+
+    .product-info {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .main-image-container {
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+
+    #mainProductImage {
+        width: 100%;
+        height: auto;
+        display: block;
+        aspect-ratio: 1 / 1;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+        #mainProductImage:hover {
+            transform: scale(1.05);
+        }
+
+    .thumbnail-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .thumbnail-item {
+        width: 60px;
+        height: 60px;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        object-fit: contain;
+        padding: 2px;
+    }
+
+        .thumbnail-item:hover, .thumbnail-item.active {
+            border-color: #20c997;
+        }
+
+    .product-title {
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #111827;
+    }
+
+    .product-packaging {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .price-section {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 6px;
+    }
+
+    .current-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ef4444;
+    }
+
+    .original-price {
+        font-size: 18px;
+        color: #6b7280;
+        text-decoration: line-through;
+    }
+
+    .short-description {
+        color: #4b5563;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+
+    .quantity-selector {
+        display: flex;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+    }
+
+        .quantity-selector button {
+            background: #f9fafb;
+            border: none;
+            width: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #4b5563;
+        }
+
+            .quantity-selector button:first-child {
+                border-right: 1px solid #d1d5db;
+                border-radius: 5px 0 0 5px;
+            }
+
+            .quantity-selector button:last-child {
+                border-left: 1px solid #d1d5db;
+                border-radius: 0 5px 5px 0;
+            }
+
+        .quantity-selector input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            -moz-appearance: textfield;
+        }
+
+            .quantity-selector input::-webkit-outer-spin-button, .quantity-selector input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+    .btn-add-to-cart {
+        flex-grow: 1;
+        background: linear-gradient(to right, #20c997, #17a2b8);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-add-to-cart:hover {
+            background: linear-gradient(to right, #19a37a, #138f96);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+    .stock-info {
+        font-size: 14px;
+        color: #374151;
+    }
+
+    .product-long-details {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        width: 100%;
+    }
+
+    .tabs {
+        border-bottom: 1px solid #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .tab-link {
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: -1px;
+        border-bottom: 3px solid transparent;
+    }
+
+        .tab-link.active, .tab-link:hover {
+            color: #20c997;
+            border-bottom-color: #20c997;
+            font-weight: 500;
+        }
+
+    .tab-content {
+        display: none;
+        line-height: 1.7;
+        color: #374151;
+    }
+
+        .tab-content h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+    .ingredients-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .ingredients-table th, .ingredients-table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .ingredients-table th {
+            background-color: #f9fafb;
+        }
+
+    /* --- CSS MỚI CHO PHẦN COMMENT/REVIEW --- */
+    .text-warning {
+        color: #ffc107 !important;
+    }
+    /* Màu vàng cho sao */
+    .text-muted {
+        color: #d1d5db !important;
+    }
+    /* Màu xám cho sao rỗng */
+
+    .rating-overview {
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Style cho form đánh giá */
+    .comment-form-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        margin-top: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-family: inherit;
+    }
+
+    .btn-submit-review {
+        background-color: #20c997;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    /* Star Rating Input (Radio Button Trick) */
+    .star-rating-input {
+        display: flex;
+        flex-direction: row-reverse; /* Đảo ngược để dùng selector ~ */
+        justify-content: flex-end;
+        gap: 5px;
+    }
+
+        .star-rating-input input {
+            display: none;
+        }
+
+        .star-rating-input label {
+            font-size: 24px;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+            /* Khi hover hoặc checked, đổi màu các sao phía trước */
+            .star-rating-input input:checked ~ label,
+            .star-rating-input label:hover,
+            .star-rating-input label:hover ~ label {
+                color: #ffc107;
+            }
+
+    /* Danh sách comment */
+    .comment-list {
+        margin-top: 20px;
+    }
+
+    .comment-item {
+        border-bottom: 1px solid #f1f1f1;
+        padding: 20px 0;
+        display: flex;
+        gap: 15px;
+    }
+
+    .comment-avatar {
+        width: 45px;
+        height: 45px;
+        background: #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .comment-content-area {
+        flex: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .verified-badge {
+        font-size: 12px;
+        color: #059669;
+        background: #d1fae5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 5px;
+    }
+
+    .comment-date {
+        font-size: 13px;
+        color: #9ca3af;
+    }
+
+    .comment-text {
+        color: #4b5563;
+        margin-top: 5px;
+        line-height: 1.5;
+    }
+
+    /* Alert styles */
+    .alert {
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .comment-media-grid {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .comment-media-item {
+        width: 100px;
+        height: 100px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        cursor: pointer;
+        position: relative;
+    }
+
+        .comment-media-item img,
+        .comment-media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .play-icon-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 24px;
+        text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        pointer-events: none;
+    }
+
+    /* Phần Upload trong Form */
+    .upload-btn-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .btn-upload {
+        border: 1px dashed #20c997;
+        color: #20c997;
+        background-color: white;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-upload:hover {
+            background-color: #f0fdf9;
+        }
+
+    .upload-btn-wrapper input[type=file] {
+        font-size: 100px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Khu vực xem trước ảnh (Preview) */
+    #preview-area {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .preview-item {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+    }
+
+        .preview-item img, .preview-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .remove-btn {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(255,0,0,0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="product-detail-container">
+    <div class="product-gallery">
+        <div class="main-image-container">
+            <img id="mainProductImage" src="@Model.Product.thumbnail_url" alt="@Model.Product.name" />
+        </div>
+        <div class="thumbnail-list">
+            <img src="@Model.Product.thumbnail_url" alt="Thumbnail Main" class="thumbnail-item active" onclick="changeImage(this)" />
+            @if (Model.Images != null)
+            {
+                foreach (var img in Model.Images)
+                {
+                    <img src="@img.image_url" alt="Thumbnail" class="thumbnail-item" onclick="changeImage(this)" />
+                }
+            }
+        </div>
+    </div>
+
+    <div class="product-info">
+        <h1 class="product-title">@Model.Product.name</h1>
+
+        <div class="rating-overview">
+            <span>@Html.Raw(RenderStars(Model.AverageRating))</span>
+            <span>(@Model.TotalReviews đánh giá)</span>
+        </div>
+        <p class="product-packaging">@Model.Product.packaging_details</p>
+
+        <div class="price-section">
+            <span class="current-price">@FormatPrice(Model.Product.sale_price)</span>
+            @if (Model.Product.sale_price < Model.Product.original_price)
+            {
+                <span class="original-price">@FormatPrice(Model.Product.original_price)</span>
+            }
+        </div>
+
+        <div class="short-description">
+            @Html.Raw(Model.Product.description)
+        </div>
+
+        <div class="actions">
+            <div class="quantity-selector">
+                <button type="button" onclick="changeQuantity(-1)">-</button>
+                <input type="number" id="quantityInput" value="1" min="1" max="@Model.Product.stock_quantity" readonly>
+                <button type="button" onclick="changeQuantity(1)">+</button>
+            </div>
+            <a href="@Url.Action("AddToCart", "Cart", new { productId = Model.Product.id })" class="btn-add-to-cart">
+                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+            </a>
+        </div>
+        <div class="stock-info">
+            Tồn kho: <strong>@Model.Product.stock_quantity</strong> sản phẩm
+        </div>
+    </div>
+</div>
+
+<div class="product-long-details">
+    <div class="tabs">
+        <button class="tab-link active" onclick="openTab(event, 'Description')">Mô tả chi tiết</button>
+        <button class="tab-link" onclick="openTab(event, 'Ingredients')">Thành phần</button>
+        <button class="tab-link" onclick="openTab(event, 'Dosage')">Liều dùng & Cách dùng</button>
+        <button class="tab-link" onclick="openTab(event, 'Contraindications')">Chống chỉ định</button>
+        <button class="tab-link" onclick="openTab(event, 'Reviews')">Đánh giá (@Model.TotalReviews)</button>
+    </div>
+
+    <div id="Description" class="tab-content" style="display: block;">
+        <h2>Thông tin chi tiết sản phẩm</h2>
+        @Html.Raw(Model.Product.content)
+    </div>
+
+    <div id="Ingredients" class="tab-content">
+        <h2>Thành phần của @Model.Product.name</h2>
+        @if (Model.IngredientsList != null && Model.IngredientsList.Any())
+        {
+            <table class="ingredients-table">
+                <thead><tr><th>Thành phần</th><th>Hàm lượng</th></tr></thead>
+                <tbody>
+                    @foreach (var item in Model.IngredientsList)
+                    {
+                        <tr><td>@item.name</td><td>@item.amount @item.unit</td></tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        { <p>Thông tin thành phần đang được cập nhật.</p>}
+    </div>
+
+    <div id="Dosage" class="tab-content">
+        <h2>Liều dùng & Cách dùng</h2>
+        @Html.Raw(Model.Product.dosage)
+    </div>
+
+    <div id="Contraindications" class="tab-content">
+        <h2>Chống chỉ định</h2>
+        @Html.Raw(Model.Product.contraindications)
+    </div>
+
+    <div id="Reviews" class="tab-content">
+        <h2>Đánh giá khách hàng</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        <div class="comment-form-box">
+            @if (currentUser != null)
+            {
+                <h4 style="margin-top:0; margin-bottom: 15px;">Viết nhận xét của bạn</h4>
+                using (Html.BeginForm("AddComment", "HomeCustomer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.NewComment.ProductId)
+
+                    <div class="form-group">
+                        <label style="font-weight: 500; display:block; margin-bottom:5px;">Bạn chấm sản phẩm này mấy sao?</label>
+                        <div class="star-rating-input">
+                            <input type="radio" id="star5" name="NewComment.Rating" value="5" /><label for="star5" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star4" name="NewComment.Rating" value="4" /><label for="star4" title="Tốt"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star3" name="NewComment.Rating" value="3" /><label for="star3" title="Bình thường"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star2" name="NewComment.Rating" value="2" /><label for="star2" title="Tệ"><i class="fa-solid fa-star"></i></label>
+                            <input type="radio" id="star1" name="NewComment.Rating" value="1" /><label for="star1" title="Rất tệ"><i class="fa-solid fa-star"></i></label>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.NewComment.Rating, "", new { @class = "text-danger", @style = "color:red; font-size:12px;" })
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-weight: 500;">Nội dung đánh giá:</label>
+                        @Html.TextAreaFor(m => m.NewComment.Content, new { @class = "form-control-custom", rows = "3", placeholder = "Chia sẻ cảm nhận..." })
+                    </div>
+
+                    <div class="form-group">
+                        <div class="upload-btn-wrapper">
+                            <button class="btn-upload" type="button">
+                                <i class="fa-solid fa-camera"></i> Thêm ảnh/video
+                            </button>
+                            <input type="file" name="NewComment.UploadImages" id="fileInput" multiple accept="image/*,video/*" onchange="previewFiles()" />
+                        </div>
+                        <div id="preview-area"></div>
+                    </div>
+
+                    <button type="submit" class="btn-submit-review">Gửi đánh giá</button>
+                }
+            }
+            else
+            {
+                <div style="text-align: center; color: #666;">
+                    Bạn cần <a href="@Url.Action("Login", "Login", new { returnUrl = Request.Url.PathAndQuery })" style="color: #20c997; font-weight: bold;">đăng nhập</a> để viết đánh giá.
+                </div>
+            }
+        </div>
+
+        <div class="comment-list">
+            @if (Model.Comments != null && Model.Comments.Any())
+            {
+                foreach (var comment in Model.Comments)
+                {
+                    <div class="comment-item">
+                        <div class="comment-avatar">
+                            @(comment.user.full_name.Length > 0 ? comment.user.full_name.Substring(0, 1).ToUpper() : "U")
+                        </div>
+                        <div class="comment-content-area">
+                            <div class="comment-header">
+                                <div>
+                                    <span class="user-name">@comment.user.full_name</span>
+                                    @if (comment.is_verified_purchase == true)
+                                    {
+                                        <span class="verified-badge" title="Người dùng đã mua sản phẩm này"><i class="fa-solid fa-check"></i> Đã mua</span>
+                                    }
+                                </div>
+                                <span class="comment-date">@comment.created_at.Value.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div style="margin-bottom: 5px;">
+                                @Html.Raw(RenderStars(comment.rating ?? 0))
+                            </div>
+
+                            <div class="comment-text">
+                                @comment.content
+                            </div>
+
+                            @if (comment.comment_medias != null && comment.comment_medias.Any())
+                            {
+                                <div class="comment-media-grid">
+                                    @foreach (var media in comment.comment_medias)
+                                    {
+                                        if (media.media_type == "image")
+                                        {
+                                            <div class="comment-media-item" onclick="window.open('@media.media_url', '_blank')">
+                                                <img src="@media.media_url" alt="Review image" loading="lazy" />
+                                            </div>
+                                        }
+                                        else if (media.media_type == "video")
+                                        {
+                                            <div class="comment-media-item">
+                                                <video controls>
+                                                    <source src="@media.media_url" type="video/mp4">
+                                                    Trình duyệt không hỗ trợ video.
+                                                </video>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="text-align: center; margin-top: 20px; color: #999;">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function changeImage(thumbnailElement) {
+            document.getElementById('mainProductImage').src = thumbnailElement.src;
+            document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('active'));
+            thumbnailElement.classList.add('active');
+        }
+        function changeQuantity(amount) {
+            const input = document.getElementById('quantityInput');
+            let value = parseInt(input.value);
+            const max = parseInt(input.max);
+            if (value + amount >= 1 && value + amount <= max) {
+                input.value = value + amount;
+            }
+        }
+        function openTab(evt, tabName) {
+            // Ẩn tất cả tab content
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = "none";
+            }
+
+            // Bỏ active class ở tất cả tab link
+            var tabLinks = document.getElementsByClassName("tab-link");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+
+            // Hiện tab được chọn và thêm class active
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function previewFiles() {
+            var preview = document.getElementById('preview-area');
+            var files = document.getElementById('fileInput').files;
+
+            // Xóa preview cũ (nếu muốn logic chọn đè, hoặc bạn có thể làm logic nối thêm)
+            preview.innerHTML = '';
+
+            if (files) {
+                [].forEach.call(files, function (file) {
+                    var reader = new FileReader();
+
+                    reader.readAsDataURL(file);
+
+                    reader.onloadend = function () {
+                        var div = document.createElement("div");
+                        div.className = "preview-item";
+
+                        if (file.type.startsWith("image/")) {
+                            var img = document.createElement("img");
+                            img.src = reader.result;
+                            div.appendChild(img);
+                        } else if (file.type.startsWith("video/")) {
+                            var video = document.createElement("video");
+                            video.src = reader.result;
+                            div.appendChild(video);
+                        }
+
+                        preview.appendChild(div);
+                    }
+                });
+            }
+        }
+    </script>
+}

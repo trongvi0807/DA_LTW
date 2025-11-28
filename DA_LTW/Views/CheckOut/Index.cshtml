@@ -157,9 +157,6 @@
         color: #333;
     }
 
-    /* ------------------------------------------------------------------- */
-    /* 🛒 DANH SÁCH SẢN PHẨM */
-    /* ------------------------------------------------------------------- */
 
     .order-item {
         display: flex;
@@ -202,9 +199,6 @@
             color: #777;
         }
 
-    /* ------------------------------------------------------------------- */
-    /* 💰 TÓM TẮT ĐƠN HÀNG */
-    /* ------------------------------------------------------------------- */
 
     .summary {
         background: #eef4ff;
@@ -240,14 +234,9 @@
         }
 
             .summary h3 strong {
-                color: #e84949; /* Màu đỏ cho tổng cộng */
+                color: #e84949; 
             }
 
-    /* ------------------------------------------------------------------- */
-    /* 🏷️ Ô nhập mã giảm giá */
-    /* ------------------------------------------------------------------- */
-
-    /* Kiểu dáng cho ô giảm giá (đã sửa) */
     #discountCodeInput {
         border: 2px dashed #c0c0c0;
         background: #fff;
@@ -257,12 +246,34 @@
             border-color: #0a5fec;
         }
 
-    /* ------------------------------------------------------------------- */
-    /* 📱 RESPONSIVE */
-    /* ------------------------------------------------------------------- */
+
+    #applyDiscountBtn {
+        width: 120px;
+        padding: 8px 12px;
+        background: #000;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s ease;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+        #applyDiscountBtn:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+        }
+
+        #applyDiscountBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.20);
+        }
+
+
 
     @@media (max-width: 900px) {
-        /* Chuyển sang 1 cột trên điện thoại/tablet */
         .checkout-container {
             flex-direction: column;
         }
@@ -277,7 +288,7 @@
     <div class="checkout-box">
         <h2>Thông tin giao hàng</h2>
 
-        <form action="@Url.Action("PlaceOrder", "Checkout")" method="post" style="display:flex; flex-direction:column; gap:15px;">
+        <form id="checkoutForm" action="@Url.Action("PlaceOrder", "Checkout")" method="post" style="display:flex; flex-direction:column; gap:15px;">
             <input type="text" name="fullName" placeholder="Họ và tên" required class="form-control" />
             <input type="text" name="phone" placeholder="Số điện thoại" required class="form-control" />
             <textarea name="address" placeholder="Địa chỉ giao hàng" required class="form-control"></textarea>
@@ -286,12 +297,12 @@
             <div class="radio-group">
                 <label class="radio-option">
                     <input type="radio" name="shippingMethod" value="standard" checked />
-                    <span class="radio-info">Giao hàng tiêu chuẩn (3–5 ngày)</span>
+                    <span class="radio-info">Giao hàng tiêu chuẩn</span>
                     <span class="radio-fee">20.000đ</span>
                 </label>
                 <label class="radio-option">
                     <input type="radio" name="shippingMethod" value="express" />
-                    <span class="radio-info">Giao hàng nhanh (1–2 ngày)</span>
+                    <span class="radio-info">Giao hàng nhanh</span>
                     <span class="radio-fee">40.000đ</span>
                 </label>
                 <label class="radio-option">
@@ -310,22 +321,17 @@
 
             <h3 style="margin-top:10px; margin-bottom:10px;">Mã giảm giá</h3>
             <div style="display:flex; gap:10px;">
-                <input type="text"
-                       id="discountCodeInput"
-                       name="discountCode"
-                       placeholder="Nhập mã giảm giá"
-                       class="form-control"
-                       style="margin-top:0;" />
+                <input type="text" id="discountCodeInput" placeholder="Nhập mã giảm giá" class="form-control" style="margin-top:0;" />
 
-                <button type="button"
-                        id="applyDiscountBtn"
-                        class="btn-primary"
-                        style="margin-top: 0; width: 120px; padding: 10px; font-size: 14px;">
+                <input type="hidden" name="discountCode" id="hiddenDiscountCode" />
+
+                <button type="button" id="applyDiscountBtn" class="btn btn-dark" style="margin-top: 0; width: 120px;">
                     Áp dụng
                 </button>
             </div>
+            <small id="discountMessage" style="color:red;"></small>
 
-            <button type="submit" class="btn-primary" style="margin-top:15px;">Đặt hàng</button>
+            <button type="submit" class="btn btn-primary btn-lg mt-3">Đặt hàng ngay</button>
         </form>
     </div>
 
@@ -354,73 +360,80 @@
 </div>
 
 <script>
-    // Lấy các phần tử DOM
-    const shippingRadios = document.querySelectorAll('input[name="shippingMethod"]');
-    const discountInput = document.getElementById('discountCodeInput');
-    const applyBtn = document.getElementById('applyDiscountBtn');
-
-    const shippingFeeEl = document.getElementById('shippingFee');
-    const discountAmountEl = document.getElementById('discountAmount');
-    const finalTotalEl = document.getElementById('finalTotal');
-
-    // Lấy giá trị gốc từ server
-    const baseTotal = @cart.total_price;
-
-    // Biến toàn cục để giữ trạng thái
-    let currentShippingFee = 20000; // Mặc định là 'standard'
+    // 1. Cấu hình biến
+    const baseTotal = @ViewBag.Cart.total_price;
+    let currentShippingFee = 20000;
     let currentDiscount = 0;
 
-    // Hàm định dạng tiền tệ
-    const formatCurrency = (number) => {
-        // Làm tròn số trước khi định dạng
-        return Math.round(number).toLocaleString('vi-VN') + ' đ';
-    };
+    // DOM Elements
+    const elShippingFee = document.getElementById('shippingFee');
+    const elDiscountAmount = document.getElementById('discountAmount');
+    const elFinalTotal = document.getElementById('finalTotal');
+    const elMsg = document.getElementById('discountMessage');
+    const inpHiddenCode = document.getElementById('hiddenDiscountCode');
 
-    // ✅ HÀM CẬP NHẬT TỔNG CỘNG (Quan trọng)
-    function updateFinalTotal() {
-        const finalTotal = baseTotal + currentShippingFee - currentDiscount;
-        finalTotalEl.textContent = formatCurrency(finalTotal);
+    // Hàm format tiền tệ VN
+    const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+
+    // 2. Hàm cập nhật tổng tiền
+    function updateUI() {
+        const final = baseTotal + currentShippingFee - currentDiscount;
+        elFinalTotal.innerText = fmt(final);
+        elShippingFee.innerText = fmt(currentShippingFee);
+        elDiscountAmount.innerText = fmt(currentDiscount);
     }
 
-    // --- Lắng nghe sự kiện ---
-
-    // 1. Khi thay đổi phí vận chuyển
-    shippingRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            if (radio.value === 'standard') currentShippingFee = 20000;
-            else if (radio.value === 'express') currentShippingFee = 40000;
-            else if (radio.value === 'pickup') currentShippingFee = 0;
-
-            // Cập nhật UI
-            shippingFeeEl.textContent = formatCurrency(currentShippingFee);
-
-            // Cập nhật tổng cuối cùng
-            updateFinalTotal();
+    // 3. Xử lý đổi phí ship
+    document.querySelectorAll('input[name="shippingMethod"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === 'standard') currentShippingFee = 20000;
+            else if (val === 'express') currentShippingFee = 40000;
+            else currentShippingFee = 0;
+            updateUI();
         });
     });
 
-    // 2. Khi bấm nút "Áp dụng" mã giảm giá
-    applyBtn.addEventListener('click', () => {
-        const code = discountInput.value;
+    // 4. Xử lý AJAX Mã giảm giá
+    document.getElementById('applyDiscountBtn').addEventListener('click', function() {
+        const code = document.getElementById('discountCodeInput').value;
+        if(!code) return;
 
-        // Logic giả lập ở client để user thấy
-        // (Server sẽ tính lại)
-        if (code.toUpperCase() === 'SALE10') {
-            currentDiscount = baseTotal * 0.1; // 10%
-            discountAmountEl.textContent = formatCurrency(currentDiscount);
-            // Bạn có thể dùng alert hoặc một thông báo nhỏ đẹp hơn
-            // alert("Áp dụng mã giảm giá thành công!");
-        } else {
-            currentDiscount = 0;
-            discountAmountEl.textContent = formatCurrency(0);
-            // alert("Mã giảm giá không hợp lệ.");
-        }
+        // Reset thông báo
+        elMsg.innerText = "Đang kiểm tra...";
+        elMsg.style.color = "blue";
 
-        // Cập nhật tổng cuối cùng
-        updateFinalTotal();
+        // Gọi AJAX lên Server
+        fetch('/Checkout/ApplyCoupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Thành công
+                currentDiscount = data.discount;
+                elMsg.innerText = data.message;
+                elMsg.style.color = "green";
+
+                // Gán code vào input ẩn để gửi đi khi submit form
+                inpHiddenCode.value = code;
+            } else {
+                // Thất bại
+                currentDiscount = 0;
+                elMsg.innerText = data.message;
+                elMsg.style.color = "red";
+                inpHiddenCode.value = ""; // Xóa code sai
+            }
+            updateUI();
+        })
+        .catch(err => {
+            console.error(err);
+            elMsg.innerText = "Lỗi kết nối server!";
+        });
     });
 
-    // Chạy một lần khi tải trang để đảm bảo tổng tiền ban đầu đúng
-    updateFinalTotal();
-
+    // Init
+    updateUI();
 </script>
