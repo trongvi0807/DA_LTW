@@ -16,5 +16,13 @@ namespace DA_LTW.ViewModels
 
         // Danh sách thành phần đã được giải mã từ JSON
         public List<IngredientViewModel> IngredientsList { get; set; }
+
+        // --- BỔ SUNG ---
+        public List<comment> Comments { get; set; } // Danh sách comment hiện có
+        public double AverageRating { get; set; } // Điểm đánh giá trung bình
+        public int TotalReviews { get; set; } // Tổng số đánh giá
+
+        // Dùng để hiển thị Form nhập liệu
+        public ProductCommentViewModel NewComment { get; set; }
     }
 }

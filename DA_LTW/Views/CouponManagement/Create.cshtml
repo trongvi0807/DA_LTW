@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "Tạo mã giảm giá mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    :root {
+        --pearl-green-primary: #20bf6b; /* Xanh ngọc trai chủ đạo */
+        --pearl-green-dark: #0f5132;
+        --pearl-green-light: #d1f2eb;
+        --input-focus-shadow: rgba(32, 191, 107, 0.25);
+    }
+
+    /* ===== CARD ===== */
+    .card {
+        border-radius: 16px;
+        background: #ffffff;
+        border: none;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden; /* Để bo góc header không bị lòi ra */
+    }
+
+    .card-header {
+        /* Gradient Xanh Ngọc Trai nhẹ giống trang Index */
+        background: linear-gradient(to right, #e0f2f1, #f1f8e9);
+        padding: 20px 25px;
+        border-bottom: 1px solid #b2dfdb;
+    }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--pearl-green-dark);
+            font-size: 20px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    /* ===== FORM ELEMENTS ===== */
+    label {
+        font-weight: 600;
+        color: #4b6584;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 1px solid #d1d8e0;
+        padding: 12px 15px;
+        background: #fdfdfd;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        color: #2d3436;
+    }
+
+        .form-control:focus {
+            border-color: var(--pearl-green-primary);
+            box-shadow: 0 0 0 4px var(--input-focus-shadow);
+            background: #fff;
+        }
+
+        /* Placeholder styling */
+        .form-control::placeholder {
+            color: #a5b1c2;
+            font-size: 13px;
+        }
+
+    /* ===== TITLES ===== */
+    h5 {
+        font-weight: 700;
+        color: var(--pearl-green-primary); /* Tiêu đề con màu xanh */
+        margin-bottom: 15px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+    }
+
+        h5::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--pearl-green-primary);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+    /* ===== BUTTONS ===== */
+    .btn-success {
+        background-color: var(--pearl-green-primary) !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 600;
+        padding: 12px 25px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(32, 191, 107, 0.3);
+    }
+
+        .btn-success:hover {
+            background-color: #0fb9b1 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(32, 191, 107, 0.4);
+        }
+
+    .btn-secondary {
+        background-color: #f1f2f6 !important;
+        border: none !important;
+        color: #747d8c !important;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px 25px;
+        transition: 0.25s;
+    }
+
+        .btn-secondary:hover {
+            background-color: #dfe4ea !important;
+            color: #2f3542 !important;
+        }
+
+    /* ===== UTILS ===== */
+    hr {
+        border-top: 1px dashed #ced6e0;
+        margin: 30px 0;
+    }
+
+    .text-muted {
+        color: #a4b0be !important;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+        font-style: italic;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+</style>
+
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-circle-plus"></i> Tạo mã giảm giá mới</h3>
+    </div>
+    <div class="card-body">
+        <form action="@Url.Action("Create")" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group mb-4">
+                <label>Mã Code (Ví dụ: SALE10)</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="background:#e0f2f1; border:1px solid #d1d8e0; border-right:none; border-radius: 10px 0 0 10px;">
+                        <i class="fa-solid fa-ticket" style="color:#20bf6b;"></i>
+                    </span>
+                    <input type="text" name="code" class="form-control" required style="text-transform:uppercase; border-radius: 0 10px 10px 0;" placeholder="Nhập mã coupon..." />
+                </div>
+            </div>
+
+            <hr />
+
+            <h5>Thiết lập điều kiện</h5>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>Điều kiện áp dụng</label>
+                    <select name="attribute" class="form-control">
+                        <option value="MIN_ORDER_VALUE">Tổng giá trị đơn hàng</option>
+                    </select>
+                </div>
+                <br />
+                <div class="col-md-2">
+                    <label>So sánh</label>
+                    <select name="operator_sign" class="form-control text-center" style="font-weight:bold;">
+                        <option value=">=">>= (Lớn hơn bằng)</option>
+                        <option value=">">> (Lớn hơn)</option>
+                    </select>
+                </div>
+                <br />
+                <div class="col-md-4">
+                    <label>Giá trị (VNĐ)</label>
+                    <input type="number" name="conditionValue" class="form-control" required placeholder="VD: 100000" />
+                    <small class="text-muted">Đơn hàng tối thiểu để áp dụng</small>
+                </div>
+                <br />
+            </div>
+
+            <hr />
+
+            <h5>Thiết lập mức giảm</h5>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label>Loại giảm giá</label>
+                    <select name="discountType" class="form-control" id="discountType">
+                        <option value="FIXED_AMOUNT">Số tiền cố định (VNĐ)</option>
+                        <option value="PERCENTAGE">Phần trăm (%)</option>
+                    </select>
+                </div>
+                <br />
+                <div class="col-md-6">
+                    <label>Giá trị giảm</label>
+                    <input type="number" name="discountAmount" class="form-control" required placeholder="VD: 20000 hoặc 10" />
+                    <small class="text-muted" id="discountHelp">Nhập số tiền được giảm</small>
+                </div>
+                <br />
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="@Url.Action("Index")" class="btn btn-secondary me-2">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fa-solid fa-floppy-disk"></i> Lưu mã giảm giá
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Script đổi gợi ý khi chọn loại giảm giá
+    document.getElementById('discountType').addEventListener('change', function () {
+        var helpText = document.getElementById('discountHelp');
+        var inputAmount = document.querySelector('input[name="discountAmount"]');
+
+        if (this.value === 'PERCENTAGE') {
+            helpText.innerText = 'Nhập số phần trăm (Ví dụ: 10 để giảm 10%)';
+            inputAmount.placeholder = "VD: 10, 20, 50...";
+        } else {
+            helpText.innerText = 'Nhập số tiền cụ thể (Ví dụ: 50000 để giảm 50k)';
+            inputAmount.placeholder = "VD: 20000, 50000...";
+        }
+    });
+</script>

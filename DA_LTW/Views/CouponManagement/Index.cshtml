@@ -1,0 +1,277 @@
+﻿@model List<DA_LTW.Models.coupon>
+@{
+    ViewBag.Title = "Quản lý mã giảm giá";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    :root {
+        --pearl-green-dark: #0f5132;
+        --pearl-green-primary: #20bf6b; /* Màu chủ đạo */
+        --pearl-green-light: #d1f2eb; /* Nền nhẹ */
+        --pearl-green-hover: #0fb9b1;
+        --text-dark: #2d3436;
+    }
+
+    /* ====== CARD ====== */
+    .card {
+        border-radius: 16px;
+        border: none;
+        background: #ffffff;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05); /* Bóng đổ mềm mại hơn */
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    /* ====== HEADER ====== */
+    .card-header {
+        /* Gradient Xanh Ngọc Trai nhẹ */
+        background: linear-gradient(135deg, #e3fdf5 0%, #ffe6fa 100%);
+        background: linear-gradient(to right, #e0f2f1, #f1f8e9);
+        border-bottom: 1px solid #b2dfdb;
+        padding: 20px 25px;
+    }
+
+        .card-header h2 {
+            font-size: 20px;
+            margin: 0;
+            color: var(--pearl-green-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    /* ====== BUTTONS ====== */
+    .btn-primary {
+        background-color: var(--pearl-green-primary) !important;
+        border-color: var(--pearl-green-primary) !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 20px;
+        box-shadow: 0 4px 10px rgba(32, 191, 107, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: var(--pearl-green-hover) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(32, 191, 107, 0.4);
+        }
+
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        margin: 0 3px;
+        transition: 0.2s;
+        border: none;
+        color: white;
+    }
+
+    .btn-warning {
+        background-color: #f7b731 !important;
+    }
+
+    .btn-danger {
+        background-color: #eb3b5a !important;
+    }
+
+    .btn-action:hover {
+        transform: scale(1.15);
+    }
+
+    /* ====== TABLE ====== */
+    .table-container {
+        padding: 0;
+    }
+
+    .table {
+        margin-bottom: 0;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table thead th {
+            background: var(--pearl-green-light);
+            color: var(--pearl-green-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+            padding: 18px;
+            border-bottom: 2px solid #a7d7c5;
+            text-align: center;
+            white-space: nowrap; /* Không xuống dòng tiêu đề */
+        }
+
+        .table tbody td {
+            vertical-align: middle !important;
+            padding: 18px;
+            color: #4b6584;
+            font-size: 15px;
+            border-bottom: 1px solid #f1f2f6;
+            text-align: center;
+        }
+
+    /* Căn trái cho cột điều kiện */
+    .text-left-custom {
+        text-align: left !important;
+        padding-left: 30px !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0fdf4 !important; /* Màu hover xanh siêu nhạt */
+    }
+
+    /* ====== BADGES & TEXT ====== */
+    .badge-code {
+        background: #e8f5e9;
+        color: #218c74;
+        font-family: 'Consolas', monospace;
+        font-weight: 700;
+        padding: 8px 15px;
+        border-radius: 6px;
+        border: 1px dashed #20bf6b;
+        font-size: 15px;
+        display: inline-block;
+    }
+
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-locked {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .text-highlight {
+        color: #e55039; /* Màu cam đỏ nổi bật cho tiền */
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .operator-sign {
+        color: var(--pearl-green-primary);
+        font-weight: 900;
+        font-size: 18px;
+        margin: 0 5px;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2><i class="fa-solid fa-ticket"></i> Quản lý mã giảm giá</h2>
+            <br />
+            <br />
+            <a href="@Url.Action("Create")" class="btn btn-primary">
+                <i class="fa fa-plus-circle"></i> Tạo mã mới
+            </a>
+        </div>
+
+        <div class="card-body table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="15%">Mã Code</th>
+                        <th width="35%" class="text-left-custom">Điều kiện áp dụng</th>
+                        <th width="20%">Giá trị giảm</th>
+                        <th width="15%">Trạng thái</th>
+                        <th width="15%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var cond = item.coupon_conditions.FirstOrDefault();
+                            <tr>
+                                <td>
+                                    <span class="badge-code">@item.code</span>
+                                </td>
+
+                                <td class="text-left-custom">
+                                    @if (cond != null && cond.attribute == "MIN_ORDER_VALUE")
+                                    {
+                                        <span>
+                                            Đơn hàng
+                                            <span class="operator-sign">@(cond.@operator)</span>
+
+                                            <strong>@string.Format("{0:N0}", decimal.Parse(cond.value)) đ</strong>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-style:italic;">Không có điều kiện</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (cond != null)
+                                    {
+                                        if (cond.discount_type == "PERCENTAGE")
+                                        {
+                                            <span class="text-highlight">Giảm @string.Format("{0:N0}", cond.discount_amount)%</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-highlight">Giảm @string.Format("{0:N0}", cond.discount_amount) đ</span>
+                                        }
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (item.is_active == true)
+                                    {
+                                        <span class="status-badge status-active">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-locked">Đã khóa</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a href="@Url.Action("ToggleStatus", new { id = item.id })" class="btn btn-action btn-warning" title="Khóa/Mở">
+                                        <i class="fa @(item.is_active == true ? "fa-lock" : "fa-unlock")"></i>
+                                    </a>
+
+                                    <a href="@Url.Action("Delete", new { id = item.id })" class="btn btn-action btn-danger" onclick="return confirm('Bạn xóa mã này là mất vĩnh viễn đó nha?');" title="Xóa">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="80" style="opacity:0.3; margin-bottom:15px;" />
+                                <h5 class="text-muted">Chưa có mã giảm giá nào được tạo</h5>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

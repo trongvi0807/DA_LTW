@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "403 Forbidden";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc layout bạn đang dùng
+}
+
+<div class="container text-center" style="padding-top: 100px;">
+    <h1 class="text-danger">403 - TRUY CẬP BỊ TỪ CHỐI</h1>
+    <p class="lead">Bạn không có quyền truy cập vào trang này.</p>
+    <p>Vui lòng đăng nhập bằng tài khoản Quản trị viên (Admin).</p>
+    <a href="@Url.Action("Index", "Login")" class="btn btn-primary">Đăng nhập lại</a>
+    <a href="@Url.Action("Index", "HomeCustomer")" class="btn btn-default">Về trang chủ</a>
+</div>

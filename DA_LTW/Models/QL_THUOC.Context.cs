@@ -29,6 +29,8 @@ namespace DA_LTW.Models
         public virtual DbSet<cart_items> cart_items { get; set; }
         public virtual DbSet<cart> carts { get; set; }
         public virtual DbSet<category> categories { get; set; }
+        public virtual DbSet<comment_medias> comment_medias { get; set; }
+        public virtual DbSet<comment> comments { get; set; }
         public virtual DbSet<coupon_conditions> coupon_conditions { get; set; }
         public virtual DbSet<coupon> coupons { get; set; }
         public virtual DbSet<district> districts { get; set; }
@@ -40,7 +42,6 @@ namespace DA_LTW.Models
         public virtual DbSet<product> products { get; set; }
         public virtual DbSet<province> provinces { get; set; }
         public virtual DbSet<role> roles { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<user_roles> user_roles { get; set; }
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<ward> wards { get; set; }

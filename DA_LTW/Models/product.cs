@@ -18,6 +18,7 @@ namespace DA_LTW.Models
         public product()
         {
             this.cart_items = new HashSet<cart_items>();
+            this.comments = new HashSet<comment>();
             this.order_items = new HashSet<order_items>();
             this.product_images = new HashSet<product_images>();
         }
@@ -33,8 +34,7 @@ namespace DA_LTW.Models
         public string dosage { get; set; }
         public string contraindications { get; set; }
         public string packaging_details { get; set; }
-        public bool prescription_required { get; set; }
-
+        public Nullable<bool> prescription_required { get; set; }
         public decimal original_price { get; set; }
         public decimal sale_price { get; set; }
         public int stock_quantity { get; set; }
@@ -51,6 +51,8 @@ namespace DA_LTW.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart_items> cart_items { get; set; }
         public virtual category category { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<comment> comments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order_items> order_items { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
