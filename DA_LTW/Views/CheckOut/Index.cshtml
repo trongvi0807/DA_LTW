@@ -3,8 +3,11 @@
     // Giả định các biến này đã được định nghĩa trong controller
     var cart = ViewBag.Cart;
     var items = ViewBag.Items as List<DA_LTW.Models.cart_items>;
-    // Đảm bảo cart và items không null để tránh lỗi Razor
-    if (cart == null) { cart = new { total_price = 0 }; }
+
+    // Lấy Subtotal đã tính chính xác từ Controller (QUAN TRỌNG)
+    decimal subtotal = ViewBag.Subtotal != null ? (decimal)ViewBag.Subtotal : 0;
+
+    // Đảm bảo items không null
     if (items == null) { items = new List<DA_LTW.Models.cart_items>(); }
 }
 
@@ -234,7 +237,7 @@
         }
 
             .summary h3 strong {
-                color: #e84949; 
+                color: #e84949;
             }
 
     #discountCodeInput {
@@ -344,6 +347,7 @@
                     <img src="@item.image" alt="@item.product_name" />
                     <div class="item-details">
                         <strong>@item.product_name</strong>
+                        <!-- Logic tính tiền hiển thị -->
                         <span>@item.quantity x @String.Format("{0:N0} đ", item.sale_price)</span>
                     </div>
                 </div>
@@ -351,17 +355,23 @@
         </div>
 
         <div class="summary">
-            <p>Tạm tính: <strong>@String.Format("{0:N0} đ", cart.total_price)</strong></p>
+            <!-- SỬA LỖI: Dùng biến subtotal thay vì cart.total_price -->
+            <p>Tạm tính: <strong>@String.Format("{0:N0} đ", subtotal)</strong></p>
             <p>Phí vận chuyển: <strong id="shippingFee">20.000 đ</strong></p>
             <p>Giảm giá: <strong id="discountAmount">0 đ</strong></p>
-            <h3>Tổng cộng: <strong id="finalTotal">@String.Format("{0:N0} đ", cart.total_price + 20000)</strong></h3>
+
+            <!-- SỬA LỖI: Dùng biến subtotal để tính tổng ban đầu -->
+            <h3>Tổng cộng: <strong id="finalTotal">@String.Format("{0:N0} đ", subtotal + 20000)</strong></h3>
         </div>
     </div>
 </div>
 
 <script>
     // 1. Cấu hình biến
-    const baseTotal = @ViewBag.Cart.total_price;
+    // SỬA LỖI: Lấy giá trị từ ViewBag.Subtotal (được tính thủ công ở Controller)
+    // Thay vì lấy từ @ViewBag.Cart.total_price (có thể bị sai trong DB)
+    const baseTotal = @subtotal;
+
     let currentShippingFee = 20000;
     let currentDiscount = 0;
 
