@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity; // Cần thiết cho Transaction
+using System.Data.Entity;
 
 namespace DA_LTW.Controllers.Customer
 {
@@ -33,22 +33,17 @@ namespace DA_LTW.Controllers.Customer
             var condition = db.coupon_conditions.FirstOrDefault(c => c.coupon_id == coupon.id);
             if (condition == null)
             {
-                // Nếu không có điều kiện, cho phép áp dụng luôn (hoặc chặn tùy bạn)
                 return 0;
             }
 
             // 3. Kiểm tra điều kiện (Attribute + Operator + Value)
-            // Ví dụ: attribute="MIN_ORDER_VALUE", operator=">=", value="100000"
             bool isConditionMet = false;
-            decimal conditionValue = decimal.Parse(condition.value); // Giá trị cột mốc (ví dụ 100k)
-
-            // Logic so sánh đơn giản
+            decimal conditionValue = decimal.Parse(condition.value);
             if (condition.attribute == "MIN_ORDER_VALUE")
             {
                 if (condition.@operator == ">=" && orderSubtotal >= conditionValue) isConditionMet = true;
                 else if (condition.@operator == ">" && orderSubtotal > conditionValue) isConditionMet = true;
             }
-            // Bạn có thể mở rộng thêm các attribute khác ở đây
 
             if (!isConditionMet)
             {
@@ -62,23 +57,18 @@ namespace DA_LTW.Controllers.Customer
             {
                 // Giảm theo % (condition.discount_amount lưu số %, ví dụ 10)
                 discountAmount = orderSubtotal * (condition.discount_amount / 100);
-
-                // (Tùy chọn) Bạn có thể thêm logic "Giảm tối đa bao nhiêu tiền" nếu muốn
             }
             else if (condition.discount_type == "FIXED_AMOUNT")
             {
-                // Giảm số tiền cố định (ví dụ 50000)
                 discountAmount = condition.discount_amount;
             }
-
-            // Đảm bảo không giảm quá giá trị đơn hàng
             return discountAmount > orderSubtotal ? orderSubtotal : discountAmount;
         }
 
         [HttpPost]
         public ActionResult ApplyCoupon(string code)
         {
-            // Lấy lại subtotal từ session hoặc tính lại từ DB để bảo mật
+            // Lấy lại subtotal từ session hoặc tính lại từ DB đ
             int userId = Session["UserId"] != null ? (int)Session["UserId"] : 1;
             var cart = db.carts.Include(c => c.cart_items).FirstOrDefault(c => c.user_id == userId && c.status == "ACTIVE");
 
@@ -100,18 +90,11 @@ namespace DA_LTW.Controllers.Customer
                 return Json(new { success = false, message = msg });
             }
         }
-
-
-
-        // ------------------------------
-        // GET: /Checkout
-        // ------------------------------
         public ActionResult Index()
         {
-            // Lấy userId (tạm test với user = 1 nếu chưa có login)
             int userId = Session["UserId"] != null ? (int)Session["UserId"] : 1;
 
-            // Lấy giỏ hàng hiện tại
+            // 1. Lấy giỏ hàng
             var cart = db.carts.FirstOrDefault(c => c.user_id == userId && c.status == "ACTIVE");
             if (cart == null)
             {
@@ -119,19 +102,20 @@ namespace DA_LTW.Controllers.Customer
                 return RedirectToAction("Index", "Cart");
             }
 
-            // Lấy danh sách sản phẩm trong giỏ
+            // 2. Lấy danh sách sản phẩm 
             var items = db.cart_items.Where(i => i.cart_id == cart.id).ToList();
 
-            // Truyền dữ liệu sang View
+            // 3. TÍNH TỔNG TIỀN NGAY TẠI ĐÂY
+            decimal subtotal = items.Sum(x => x.sale_price * x.quantity);
+
+            // 4. Truyền dữ liệu sang View
             ViewBag.Cart = cart;
             ViewBag.Items = items;
+            ViewBag.Subtotal = subtotal;
 
             return View();
         }
 
-        // ------------------------------
-        // POST: /Checkout/PlaceOrder
-        // ------------------------------
 
         [HttpPost]
         public ActionResult PlaceOrder(string fullName, string phone, string address, string shippingMethod, string paymentMethod, string discountCode)
@@ -151,8 +135,7 @@ namespace DA_LTW.Controllers.Customer
             string msg = "";
             decimal discount = GetDiscountValue(discountCode, subtotal, out msg);
 
-            // Nếu mã lỗi hoặc không hợp lệ, discount sẽ tự bằng 0 -> Vẫn cho đặt hàng nhưng không giảm giá
-            // Hoặc bạn có thể return View và báo lỗi nếu muốn bắt buộc mã phải đúng.
+            // Nếu mã lỗi hoặc không hợp lệ, discount sẽ tự bằng 0  Vẫn cho đặt hàng nhưng không giảm giá
 
             using (var transaction = db.Database.BeginTransaction())
             {
@@ -167,7 +150,7 @@ namespace DA_LTW.Controllers.Customer
                         shipping_address = address,
                         subtotal_money = subtotal,
                         shipping_fee = shippingFee,
-                        discount_amount = discount, // ✅ Đã lưu đúng giá trị tính từ DB
+                        discount_amount = discount,
                         payment_method = paymentMethod,
                         shipping_method = shippingMethod,
                         payment_status = (paymentMethod == "COD") ? "UNPAID" : "PENDING",
@@ -221,10 +204,8 @@ namespace DA_LTW.Controllers.Customer
         [HttpPost]
         public ActionResult ChooseShipping(string shippingMethod)
         {
-            // Giả sử có lưu session tạm thời
+            //  lưu session tạm thời
             Session["ShippingMethod"] = shippingMethod;
-
-            // Sau khi chọn xong thì chuyển sang trang Checkout
             return RedirectToAction("Index", "Checkout");
         }
 

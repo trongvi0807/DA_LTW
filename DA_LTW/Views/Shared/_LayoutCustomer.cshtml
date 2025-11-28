@@ -89,8 +89,14 @@
             <img src="https://res.cloudinary.com/dxy81jyw2/image/upload/v1761979388/logo-nha-thuoc-1A47wD_agmkwi.webp" alt="Logo Nhà Thuốc" />
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="Tìm kiếm thuốc, sản phẩm..." />
-            <button type="submit"><i class="fa-solid fa-search"></i></button>
+            @using (Html.BeginForm("Index", "HomeCustomer", FormMethod.Get))
+            {
+                <input type="text"
+                       name="keyword"
+                       placeholder="Tìm kiếm thuốc, sản phẩm..."
+                       value="@Request.QueryString["keyword"]" />
+                <button type="submit"><i class="fa-solid fa-search"></i></button>
+            }
         </div>
         <nav class="main-menu">
             <ul>

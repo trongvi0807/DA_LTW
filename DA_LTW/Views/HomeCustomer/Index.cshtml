@@ -179,14 +179,33 @@
 
 <div class="featured-container">
     <div class="featured-header">
-        <h2 class="featured-title">Sản phẩm nổi bật</h2>
-        <p class="featured-subtitle">Những sản phẩm chất lượng được tin dùng nhất</p>
+        @if (!string.IsNullOrEmpty(ViewBag.Keyword))
+        {
+            <h2 class="featured-title">Kết quả tìm kiếm: "@ViewBag.Keyword"</h2>
+            <p class="featured-subtitle">Tìm thấy @Model.Count() sản phẩm phù hợp</p>
+            <a href="@Url.Action("Index", "HomeCustomer")" style="color: #20c997; text-decoration: none;">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại xem tất cả
+            </a>
+        }
+        else
+        {
+            <h2 class="featured-title">Sản phẩm nổi bật</h2>
+            <p class="featured-subtitle">Những sản phẩm chất lượng được tin dùng nhất</p>
+        }
     </div>
 
     @if (Model == null || !Model.Any())
     {
         <div style="text-align: center; padding: 40px 20px; color: #6b7280;">
-            Chưa có sản phẩm nào để hiển thị.
+            @if (!string.IsNullOrEmpty(ViewBag.Keyword))
+            {
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <p>Không tìm thấy sản phẩm nào khớp với từ khóa "<strong>@ViewBag.Keyword</strong>".</p>
+            }
+            else
+            {
+                <p>Chưa có sản phẩm nào để hiển thị.</p>
+            }
         </div>
     }
     else

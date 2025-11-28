@@ -34,16 +34,29 @@ namespace DA_LTW.Controllers.Customer
             return _cloudinary;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string keyword)
         {
-            // Lấy danh sách sản phẩm đang được bán, sắp xếp mới nhất lên đầu
-            var products = db.products
-                             .Where(p => p.is_active == true)
-                             .OrderByDescending(p => p.created_at)
-                             .ToList();
+            // 1. Khởi tạo query lấy sản phẩm active
+            var products = db.products.Where(p => p.is_active == true);
+
+            // 2. Nếu có từ khóa tìm kiếm
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                // Chuyển về chữ thường để tìm kiếm không phân biệt hoa thường (tùy cấu hình DB)
+                // Tìm theo Tên sản phẩm HOẶC Mô tả
+                products = products.Where(p => p.name.Contains(keyword) ||
+                                               p.description.Contains(keyword) ||
+                                               p.sku.Contains(keyword));
+
+                // Lưu từ khóa lại để hiển thị bên View
+                ViewBag.Keyword = keyword;
+            }
+
+            // 3. Sắp xếp và lấy danh sách
+            var result = products.OrderByDescending(p => p.created_at).ToList();
 
             // Truyền danh sách sản phẩm sang View
-            return View(products);
+            return View(result);
         }
 
 
@@ -98,11 +111,11 @@ namespace DA_LTW.Controllers.Customer
                 }
                 catch
                 {
-                    // Nếu JSON lỗi thì bỏ qua, không crash trang
+
                 }
             }
 
-            // 7. Khởi tạo ViewModel (ĐOẠN BẠN CẦN ĐÂY)
+            // 7. Khởi tạo ViewModel
             var viewModel = new ProductDetailViewModel
             {
                 Product = product,
@@ -180,9 +193,9 @@ namespace DA_LTW.Controllers.Customer
                         };
                         
                         db.comments.Add(newComment);
-                        db.SaveChanges(); // Lưu để sinh ra ID (newComment.id)
+                        db.SaveChanges(); 
 
-                        // --- BƯỚC B: UPLOAD MEDIA LÊN CLOUDINARY ---
+                        // UPLOAD MEDIA LÊN CLOUDINARY ---
                         if (model.UploadImages != null && model.UploadImages.Count > 0)
                         {
                             var cloudinary = GetCloudinary();
@@ -219,7 +232,6 @@ namespace DA_LTW.Controllers.Customer
                                         mediaType = "video";
                                     }
 
-                                    // Lưu link vào bảng comment_medias
                                     if (!string.IsNullOrEmpty(mediaUrl))
                                     {
                                         var media = new comment_medias
@@ -234,18 +246,17 @@ namespace DA_LTW.Controllers.Customer
                                     }
                                 }
                             }
-                            db.SaveChanges(); // Lưu media
+                            db.SaveChanges(); 
                         }
 
-                        transaction.Commit(); // Xác nhận lưu DB thành công
+                        transaction.Commit(); 
                         TempData["SuccessMessage"] = "Cảm ơn bạn! Đánh giá đã được gửi và đang chờ duyệt.";
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback(); // Có lỗi thì hoàn tác, không lưu comment rác
+                        transaction.Rollback(); 
                         TempData["ErrorMessage"] = "Có lỗi xảy ra khi xử lý: " + ex.Message;
 
-                        // (Tùy chọn) Lưu lại dữ liệu cũ để người dùng không phải nhập lại
                         TempData["OldContent"] = model.Content;
                         TempData["OldRating"] = model.Rating;
                     }
@@ -253,7 +264,6 @@ namespace DA_LTW.Controllers.Customer
             }
             else
             {
-                // Lỗi Validation (VD: Chưa chọn sao, chưa nhập nội dung)
                 // Lấy danh sách lỗi ra chuỗi để hiển thị
                 var validationErrors = string.Join("; ", ModelState.Values
                                                     .SelectMany(x => x.Errors)
@@ -274,7 +284,7 @@ namespace DA_LTW.Controllers.Customer
         // Hàm kiểm tra xem user đã mua sản phẩm và đơn hàng thành công chưa
         private bool CheckIfUserBoughtProduct(int userId, int productId)
         {
-            // Logic: Join bảng orders và order_items
+
             // Điều kiện:
             // 1. Đúng User ID
             // 2. Đúng Product ID
