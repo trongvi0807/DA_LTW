@@ -12,10 +12,6 @@ namespace DA_LTW.Controllers.Customer
     {
         private db_cnpmEntities db = new db_cnpmEntities();
 
-
-        // ---------------------------------------------------------
-        // 1. HÀM RIÊNG: TÍNH GIẢM GIÁ TỪ DB (Logic cốt lõi)
-        // ---------------------------------------------------------
         private decimal GetDiscountValue(string code, decimal orderSubtotal, out string message)
         {
             message = "";
@@ -131,7 +127,6 @@ namespace DA_LTW.Controllers.Customer
             // Tính Ship
             decimal shippingFee = (shippingMethod == "express") ? 40000 : (shippingMethod == "standard" ? 20000 : 0);
 
-            // ✅ LOGIC MỚI: Tính giảm giá (Gọi hàm private, không tin tưởng Client)
             string msg = "";
             decimal discount = GetDiscountValue(discountCode, subtotal, out msg);
 

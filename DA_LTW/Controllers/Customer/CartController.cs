@@ -11,9 +11,6 @@ namespace DA_LTW.Controllers.Customer
     {
         private db_cnpmEntities db = new db_cnpmEntities();
 
-        // --------------------------------------------------------------
-        // 🧩 HÀM LẤY GIỎ HÀNG TỪ SESSION
-        // --------------------------------------------------------------
         private List<cart_items> GetCart()
         {
             // Nếu session chưa có giỏ hàng => khởi tạo mới
@@ -26,9 +23,6 @@ namespace DA_LTW.Controllers.Customer
             return cart;
         }
 
-        // --------------------------------------------------------------
-        // 🛒 THÊM SẢN PHẨM VÀO GIỎ HÀNG
-        // --------------------------------------------------------------
 
         public ActionResult AddToCart(int productId, int quantity = 1)
         {
@@ -128,9 +122,6 @@ namespace DA_LTW.Controllers.Customer
         }
 
 
-        // --------------------------------------------------------------
-        // 🧾 TRANG XEM GIỎ HÀNG
-        // --------------------------------------------------------------
         public ActionResult Index()
         {
             // 1. Kiểm tra đăng nhập
@@ -163,9 +154,7 @@ namespace DA_LTW.Controllers.Customer
             return View(items);
         }
 
-        // --------------------------------------------------------------
-        // ❌ XÓA 1 SẢN PHẨM KHỎI GIỎ HÀNG
-        // --------------------------------------------------------------
+
         public ActionResult Remove(int id)
         {
             var cart = GetCart();
@@ -180,9 +169,7 @@ namespace DA_LTW.Controllers.Customer
             return RedirectToAction("Index");
         }
 
-        // --------------------------------------------------------------
-        // 🧮 HIỂN THỊ TỔNG SỐ SẢN PHẨM (PARTIAL)
-        // --------------------------------------------------------------
+
         [ChildActionOnly]
         public ActionResult CartSummary()
         {
@@ -201,9 +188,7 @@ namespace DA_LTW.Controllers.Customer
         }
 
 
-        // --------------------------------------------------------------
-        // 🧹 GIẢI PHÓNG NGUỒN LỰC
-        // --------------------------------------------------------------
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
