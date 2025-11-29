@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Configuration; // THÊM MỚI: Để đọc Web.config
-using CloudinaryDotNet; // THÊM MỚI
-using CloudinaryDotNet.Actions; // THÊM MỚI
+using System.Configuration; 
+using CloudinaryDotNet; 
+using CloudinaryDotNet.Actions; 
 
 namespace DA_LTW.Controllers.Customer
 {
@@ -79,7 +79,6 @@ namespace DA_LTW.Controllers.Customer
                 else
                 {
                     ModelState.AddModelError("", "Lỗi khi tải ảnh lên. Vui lòng thử lại.");
-                    // SỬA LẠI: Trả về view "Index"
                     return View("Index", userInDb);
                 }
             }
@@ -92,8 +91,6 @@ namespace DA_LTW.Controllers.Customer
             // 3. Cập nhật mật khẩu (NẾU người dùng nhập mật khẩu mới)
             if (!string.IsNullOrEmpty(updatedUser.password))
             {
-                // QUAN TRỌNG: Bạn cần HASH mật khẩu trước khi lưu!
-                // Ví dụ: userInDb.password = MyPasswordHasher.Hash(updatedUser.password);
                 userInDb.password = updatedUser.password;
             }
 
@@ -105,7 +102,6 @@ namespace DA_LTW.Controllers.Customer
             Session["User"] = userInDb;
 
             TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
-            // SỬA LẠI: Redirect về action "Index"
             return RedirectToAction("Index", "HomeCustomer");
         }
     }

@@ -32,7 +32,6 @@ namespace DA_LTW.Controllers.Customer
 
         private void PopulateDropdowns(object selectedCategory = null, object selectedBrand = null)
         {
-            // Dùng .OrderBy(c => c.name) để sắp xếp theo tên cho dễ nhìn
             var categories = db.categories.OrderBy(c => c.name).ToList();
             ViewBag.Categories = new SelectList(categories, "id", "name", selectedCategory);
 
@@ -41,15 +40,12 @@ namespace DA_LTW.Controllers.Customer
         }
 
 
-        // GET: Admin/Product
         public ActionResult Index(string q = "", int page = 1, int pageSize = 10)
         {
-            // BẮT ĐẦU BẰNG VIỆC LỌC CÁC SẢN PHẨM CÒN HOẠT ĐỘNG
-            // Dựa trên model của bạn, 'is_active' là Nullable<bool>
-            // nên ta dùng 'p.is_active == true' để lọc
+   
             var products = db.products.Where(p => p.is_active == true).AsQueryable();
 
-            // Tiếp tục lọc theo từ khóa tìm kiếm (nếu có)
+            // tìm kiếm theo yêu cầu q
             if (!string.IsNullOrEmpty(q))
             {
                 products = products.Where(p => p.name.Contains(q) || p.sku.Contains(q));
@@ -69,42 +65,39 @@ namespace DA_LTW.Controllers.Customer
             return View(list);
         }
 
-        // GET: Admin/Product/Create
         public ActionResult Create()
         {
             PopulateDropdowns();
             return View(new product());
         }
 
-        // POST: Admin/Product/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(product model,
-            HttpPostedFileBase UploadThumb,         // <-- Sửa tên từ 'imageFile'
-            IEnumerable<HttpPostedFileBase> imageFiles, // <-- Thêm tham số này
-            IEnumerable<int> imageOrders)             // <-- Thêm tham số này
+            HttpPostedFileBase UploadThumb,         
+            IEnumerable<HttpPostedFileBase> imageFiles, 
+            IEnumerable<int> imageOrders)            
         {
-            // 1. Kiểm tra Validate Lỗi (giống code của bạn)
+
             if (!ModelState.IsValid)
             {
-                // GỌI LẠI HÀM NÀY KHI VALIDATE LỖI
                 PopulateDropdowns(model.category_id, model.brand_id);
                 return View(model);
             }
 
-            // 2. Sử dụng Transaction để đảm bảo an toàn
-            // Nếu lưu sản phẩm thành công nhưng lưu ảnh lỗi, nó sẽ rollback (hủy) tất cả.
+            // Sử dụng Transaction để đảm bảo an toàn
             using (var transaction = db.Database.BeginTransaction())
             {
                 try
                 {
-                    // 3. Xử lý ảnh đại diện (thumbnail)
+                    // 3. Xử lý ảnh đại diện 
                     if (UploadThumb != null && UploadThumb.ContentLength > 0)
                     {
                         var uploadParams = new ImageUploadParams
                         {
                             File = new FileDescription(UploadThumb.FileName, UploadThumb.InputStream),
-                            Folder = "products" // Thư mục trên Cloudinary
+                            Folder = "products" 
                         };
                         var result = cloudinary.Upload(uploadParams);
                         if (result.Error == null)
@@ -112,16 +105,13 @@ namespace DA_LTW.Controllers.Customer
                             model.thumbnail_url = result.SecureUrl.ToString();
                         }
                     }
-
-                    // 4. Thiết lập thông tin và LƯU SẢN PHẨM (Lần 1)
-                    // Phải lưu ở đây để lấy được 'model.id' cho bảng product_images
                     model.created_at = DateTime.Now;
-                    model.updated_at = DateTime.Now; // Thêm luôn updated_at
+                    model.updated_at = DateTime.Now; 
                     model.is_active = true;
                     db.products.Add(model);
-                    db.SaveChanges(); // <-- Lưu để lấy ID
+                    db.SaveChanges(); 
 
-                    // 5. Xử lý upload NHIỀU ảnh chi tiết (gallery)
+                    // Xử lý upload NHIỀU ảnh chi tiết
                     if (imageFiles != null)
                     {
                         var filesList = imageFiles.ToList();
@@ -142,13 +132,10 @@ namespace DA_LTW.Controllers.Customer
 
                                 if (imgResult.Error == null)
                                 {
-                                    // Lấy thứ tự từ input (nếu không có thì dùng index + 1)
                                     int displayOrder = (ordersList.Count > i) ? ordersList[i] : (i + 1);
-
-                                    // Tạo đối tượng product_images
                                     var productImage = new product_images
                                     {
-                                        product_id = model.id, // <-- Lấy ID từ sản phẩm vừa lưu
+                                        product_id = model.id,
                                         image_url = imgResult.SecureUrl.ToString(),
                                         display_order = displayOrder,
                                         created_at = DateTime.Now
@@ -158,11 +145,9 @@ namespace DA_LTW.Controllers.Customer
                             }
                         }
 
-                        // 6. LƯU THAY ĐỔI (Lần 2) - Lưu tất cả product_images
                         db.SaveChanges();
                     }
 
-                    // 7. Nếu mọi thứ thành công, commit transaction
                     transaction.Commit();
 
                     TempData["SuccessMessage"] = "Tạo sản phẩm thành công!";
@@ -170,10 +155,7 @@ namespace DA_LTW.Controllers.Customer
                 }
                 catch (Exception ex)
                 {
-                    // 8. Nếu có lỗi, rollback (hủy) tất cả thay đổi
                     transaction.Rollback();
-
-                    // Báo lỗi cho người dùng và quay lại form
                     ModelState.AddModelError("", "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại. " + ex.Message);
                     PopulateDropdowns(model.category_id, model.brand_id);
                     return View(model);
@@ -199,17 +181,12 @@ namespace DA_LTW.Controllers.Customer
             IEnumerable<HttpPostedFileBase> imageFiles,
             IEnumerable<int> imageOrders)
         {
-            // SỬA 3: Sửa khối 'if'
+
             if (!ModelState.IsValid)
             {
-                // PHẢI GỌI LẠI HÀM NÀY
                 PopulateDropdowns(model.category_id, model.brand_id);
-
-                // PHẢI CHỈ ĐỊNH VIEW "Create"
                 return View("Create", model);
             }
-
-            // Bọc trong try-catch để bắt lỗi (ví dụ: SKU trùng lặp)
             using (var transaction = db.Database.BeginTransaction())
             {
                 try
@@ -217,26 +194,23 @@ namespace DA_LTW.Controllers.Customer
                     var p = db.products.Find(model.id);
                     if (p == null) return HttpNotFound();
 
-                    // SỬA 4: CẬP NHẬT TẤT CẢ CÁC TRƯỜNG TỪ FORM
                     p.name = model.name;
                     p.sku = model.sku;
-                    p.slug = model.slug; // <-- Bị thiếu
+                    p.slug = model.slug; 
                     p.description = model.description;
-                    p.content = model.content; // <-- Bị thiếu
-                    p.ingredients = model.ingredients; // <-- Bị thiếu
-                    p.contraindications = model.contraindications; // <-- Bị thiếu
-                    p.prescription_required = model.prescription_required; // <-- Bị thiếu
+                    p.content = model.content; 
+                    p.ingredients = model.ingredients; 
+                    p.contraindications = model.contraindications; 
+                    p.prescription_required = model.prescription_required; 
 
-                    p.original_price = model.original_price; // <-- Bị thiếu
+                    p.original_price = model.original_price; 
                     p.sale_price = model.sale_price;
                     p.stock_quantity = model.stock_quantity;
 
-                    p.category_id = model.category_id; // <-- Bị thiếu
-                    p.brand_id = model.brand_id; // <-- Bị thiếu
-
+                    p.category_id = model.category_id; 
+                    p.brand_id = model.brand_id; 
                     p.updated_at = DateTime.Now;
 
-                    // SỬA 5: Dùng 'thumbnailFile'
                     if (thumbnailFile != null && thumbnailFile.ContentLength > 0)
                     {
                         var uploadParams = new ImageUploadParams
@@ -248,14 +222,12 @@ namespace DA_LTW.Controllers.Customer
                         if (result.Error == null) p.thumbnail_url = result.SecureUrl.ToString();
                     }
 
-                    // SỬA 6: (Quan trọng) Xử lý cập nhật gallery ảnh
                     if (imageFiles != null && imageFiles.Any(f => f != null))
                     {
-                        // Bước 1: Xóa hết ảnh gallery cũ (nếu bạn muốn thay thế)
+ 
                         var oldImages = db.product_images.Where(img => img.product_id == p.id);
                         db.product_images.RemoveRange(oldImages);
 
-                        // Bước 2: Thêm ảnh mới (giống code Create)
                         var filesList = imageFiles.ToList();
                         var ordersList = imageOrders != null ? imageOrders.ToList() : new List<int>();
 
@@ -264,7 +236,7 @@ namespace DA_LTW.Controllers.Customer
                             var file = filesList[i];
                             if (file != null && file.ContentLength > 0)
                             {
-                                var imgUploadParams = new ImageUploadParams { /* ... code upload ... */ };
+                                var imgUploadParams = new ImageUploadParams {  };
                                 var imgResult = cloudinary.Upload(imgUploadParams);
 
                                 if (imgResult.Error == null)
@@ -283,7 +255,6 @@ namespace DA_LTW.Controllers.Customer
                         }
                     }
 
-                    // Lưu tất cả thay đổi
                     db.Entry(p).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
 
@@ -294,7 +265,6 @@ namespace DA_LTW.Controllers.Customer
                 }
                 catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
                 {
-                    // Bắt lỗi validation (giống lần trước)
                     transaction.Rollback();
                     foreach (var validationErrors in dbEx.EntityValidationErrors)
                     {
@@ -308,7 +278,6 @@ namespace DA_LTW.Controllers.Customer
                 }
                 catch (Exception ex)
                 {
-                    // Bắt lỗi chung
                     transaction.Rollback();
                     ModelState.AddModelError("", "Lỗi không mong muốn: " + ex.Message);
                     PopulateDropdowns(model.category_id, model.brand_id);
@@ -325,15 +294,11 @@ namespace DA_LTW.Controllers.Customer
             var p = db.products.Find(id);
             if (p == null) return HttpNotFound();
 
-            // Thay vì 'Remove', hãy set 'is_active' = false
-            // db.products.Remove(p); // <-- KHÔNG DÙNG DÒNG NÀY
-
-            p.is_active = false; // <-- THAY BẰNG DÒNG NÀY
+            p.is_active = false;
             p.updated_at = DateTime.Now;
 
             db.Entry(p).State = System.Data.Entity.EntityState.Modified;
-            db.SaveChanges(); // <-- Sẽ lưu thành công
-
+            db.SaveChanges(); 
             TempData["SuccessMessage"] = "Sản phẩm đã được ẩn (ngừng kinh doanh)!";
             return RedirectToAction("Index");
         }
